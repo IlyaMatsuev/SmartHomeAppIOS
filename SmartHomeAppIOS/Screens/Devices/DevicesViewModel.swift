@@ -19,13 +19,30 @@ final class DevicesViewModel {
         case failed(String)
     }
 
+    var selectedRoom: DeviceRoomFilter
     private(set) var state: LoadState = .idle
+    // TODO: Maybe just store them as Dictionary with rooms as keys?
     private(set) var roomGroups: [DeviceRoomGroup] = []
 
     private let service: DeviceService
 
-    init(service: DeviceService) {
+    var availableRooms: [DeviceRoom] {
+        roomGroups.map(\.room)
+    }
+
+    var visibleRoomGroups: [DeviceRoomGroup] {
+        switch selectedRoom {
+        case .all:
+            roomGroups
+
+        case .specific(let room):
+            roomGroups.filter { $0.room == room }
+        }
+    }
+
+    init(service: DeviceService, selectedRoom: DeviceRoomFilter = .all) {
         self.service = service
+        self.selectedRoom = selectedRoom
     }
 
     func load() async {

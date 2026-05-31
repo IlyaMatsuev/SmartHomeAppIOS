@@ -90,7 +90,7 @@ Discover available simulators with `xcrun simctl list devices available`.
 - No singletons inside view models — inject via init.
 - Use the asset catalog for colors. Don't hardcode hex.
 - One primary type per file; file name matches the type.
-- Every new `View` gets a `#Preview`.
+- Screen-level views get a `#Preview`. For small reusable components, add one only when the canvas would actually help iterate (e.g. multiple states shown side-by-side) — a lone capsule on a 6.7" canvas is noise.
 
 ## Agent workflow
 

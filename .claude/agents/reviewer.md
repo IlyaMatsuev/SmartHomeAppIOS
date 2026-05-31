@@ -54,7 +54,7 @@ Review code changes made by the Implementer to ensure they:
 - [ ] Async work uses `.task` / `.refreshable`, not `.onAppear { Task { ... } }` for view-lifetime work
 - [ ] State property wrappers used correctly: `@State` for view-local, `@Binding` for parent-owned, `@Environment` for system, `@Bindable` / `@Observable` for view models
 - [ ] No business logic inside the view — delegate to a ViewModel
-- [ ] `#Preview` provided for new views
+- [ ] `#Preview` provided for screen-level views (optional for small components unless the canvas meaningfully aids iteration)
 
 **ViewModels**
 

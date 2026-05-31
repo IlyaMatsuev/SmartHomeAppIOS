@@ -48,3 +48,6 @@ Config.local.plist
 # Generated docs
 docs/
 *.doccarchive
+
+# Claude Code local state
+.claude/scheduled_tasks.lock

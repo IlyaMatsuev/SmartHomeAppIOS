@@ -204,7 +204,7 @@ Place in `Shared/Components/`. They should be pure SwiftUI views with no busines
 5. **Handle errors** — surface them through `state` or `Result`, not by crashing. Never use `try!` in production code paths.
 6. **Avoid singletons** for things that need to be tested. Use a `.shared` only as a convenience default for production `init`.
 7. **Use the asset catalog** for colors and images (`Color("AccentColor")`, `Image("DeviceIcon")`). Don't hardcode hex.
-8. **Update previews** — every new `View` gets a `#Preview` block so it can be developed in Xcode's canvas.
+8. **Update previews** — screen-level views get a `#Preview`. For small reusable components, add one only when the canvas would meaningfully help iterate (e.g. multiple states or a realistic parent context shown together). Don't add a `#Preview` that just drops a single small component on a full-phone canvas — it's noise.
 
 ## Common Imports
 
@@ -219,7 +219,7 @@ import Combine         // Only if Combine is genuinely needed; prefer async/awai
 
 - Write complete, working Swift code (no `TODO:` placeholders for required functionality).
 - Include all imports.
-- Add a `#Preview` for every new `View`.
+- Add a `#Preview` for screen-level views; for small components only when it actually aids iteration (multiple states, realistic surrounding context).
 - Follow file naming conventions (`PascalCase.swift`).
 - Keep public surface minimal — default to `internal`; use `private` for helpers; `public` only when crossing a module boundary.
 - Ensure code compiles (`xcodebuild -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 16' build`) and SwiftLint is clean (`swiftlint` from repo root).

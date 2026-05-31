@@ -38,7 +38,13 @@ struct DevicesView: View {
                     description: Text("Devices added to your hub will appear here.")
                 )
             } else {
-                DeviceList(roomGroups: viewModel.roomGroups)
+                VStack(spacing: 0) {
+                    DeviceRoomFilterList(
+                        availableRooms: viewModel.availableRooms,
+                        selection: $viewModel.selectedRoom,
+                    )
+                    DeviceList(roomGroups: viewModel.visibleRoomGroups)
+                }
             }
         }
     }

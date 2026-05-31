@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Edit(.claude/agents/**)",
+      "Write(.claude/agents/**)",
+      "Bash(xcodebuild:*)",
+      "Bash(xcrun:*)",
+      "Bash(xcrun simctl:*)",
+      "Bash(swift build:*)",
+      "Bash(swift test:*)",
+      "Bash(swift package:*)",
+      "Bash(swiftlint:*)",
+      "Bash(swiftformat:*)",
+      "Bash(swift-format:*)",
+      "Bash(git *)",
+      "Bash(ls *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(rg *)",
+      "Bash(plutil:*)",
+      "Bash(open -a Simulator)",
+      "WebSearch",
+      "WebFetch(domain:developer.apple.com)",
+      "WebFetch(domain:swift.org)",
+      "WebFetch(domain:swiftpackageindex.com)"
+    ]
+  }
+}
