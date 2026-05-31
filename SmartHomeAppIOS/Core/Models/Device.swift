@@ -19,7 +19,10 @@ struct Device: Codable, Identifiable, Hashable {
     let zigbeeFriendlyName: String?
     let zigbeeIeeeAddress: String?
 
+    // "controls" and "measurements" might come undefined or empty
+    // swiftlint:disable:next discouraged_optional_collection
     let controls: [String: AnyCodable]?
+    // swiftlint:disable:next discouraged_optional_collection
     let measurements: [String: AnyCodable]?
 
     let controlsUpdatedAt: Date?

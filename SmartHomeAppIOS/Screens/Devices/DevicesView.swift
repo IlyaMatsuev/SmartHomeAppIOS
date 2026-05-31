@@ -22,12 +22,14 @@ struct DevicesView: View {
         case .idle, .loading:
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+
         case .failed(let message):
             ContentUnavailableView(
                 "Couldn't load devices",
                 systemImage: "exclamationmark.triangle",
                 description: Text(message)
             )
+
         case .loaded:
             if viewModel.roomGroups.isEmpty {
                 ContentUnavailableView(

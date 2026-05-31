@@ -130,6 +130,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				90638B962FCC9AB000FD7F19 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				90380FD42FC7942C000FCB28 /* SmartHomeAppIOS */,
@@ -222,6 +223,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				90638B382FCA520B00FD7F19 /* XCRemoteSwiftPackageReference "AnyCodable" */,
+				90638B942FCC9A8700FD7F19 /* XCRemoteSwiftPackageReference "SwiftLint" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 90380FD32FC7942C000FCB28 /* Products */;
@@ -294,6 +296,10 @@
 			isa = PBXTargetDependency;
 			target = 90380FD12FC7942C000FCB28 /* SmartHomeAppIOS */;
 			targetProxy = 90380FEA2FC7942E000FCB28 /* PBXContainerItemProxy */;
+		};
+		90638B962FCC9AB000FD7F19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 90638B952FCC9AB000FD7F19 /* SwiftLintBuildToolPlugin */;
 		};
 /* End PBXTargetDependency section */
 
@@ -629,6 +635,14 @@
 				minimumVersion = 0.6.7;
 			};
 		};
+		90638B942FCC9A8700FD7F19 /* XCRemoteSwiftPackageReference "SwiftLint" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/SwiftLint";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.63.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -636,6 +650,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 90638B382FCA520B00FD7F19 /* XCRemoteSwiftPackageReference "AnyCodable" */;
 			productName = AnyCodable;
+		};
+		90638B952FCC9AB000FD7F19 /* SwiftLintBuildToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 90638B942FCC9A8700FD7F19 /* XCRemoteSwiftPackageReference "SwiftLint" */;
+			productName = "plugin:SwiftLintBuildToolPlugin";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

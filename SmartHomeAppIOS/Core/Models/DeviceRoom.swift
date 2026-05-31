@@ -1,4 +1,3 @@
-
 enum DeviceRoom: String, Codable, Hashable, CaseIterable {
     case general = "none"
     case livingRoom = "living-room"

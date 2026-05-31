@@ -1,4 +1,3 @@
-
 enum DeviceBrand: String, Codable, Hashable, CaseIterable {
     case google
     case shelly

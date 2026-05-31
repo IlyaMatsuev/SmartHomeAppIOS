@@ -1,4 +1,3 @@
-
 struct Page<Item: Codable & Hashable>: Codable, Hashable {
     let items: [Item]
     let page: Int

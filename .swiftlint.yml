@@ -23,7 +23,6 @@ excluded:
 
 opt_in_rules:
   # --- API Design Guidelines: clarity & idiom ---------------------------------
-  - anyobject_protocol                       # Use `AnyObject`, not `class`, in protocol inheritance
   - array_init                               # `Array(seq)` over `seq.map { $0 }`
   - balanced_xctest_lifecycle                # `setUp`/`tearDown` come in pairs
   - closure_body_length                      # Closures shouldn't grow unbounded
@@ -92,7 +91,7 @@ opt_in_rules:
   - raw_value_for_camel_cased_codable_enum   # Codable enums should have explicit `rawValue`s
   - reduce_into                              # `reduce(into:)` over `reduce(...)` for collections
   - redundant_nil_coalescing                 # `x ?? nil` is redundant
-  - redundant_self_in_closure                # Only `self.` in closures when actually needed
+  - redundant_self                           # Only `self.` in closures when actually needed
   - redundant_type_annotation                # `let s: String = "x"` → `let s = "x"`
   - return_value_from_void_function          # Don't `return foo()` from a Void function
   - self_binding                             # `guard let self` (shorthand) over `guard let self = self`
@@ -109,8 +108,6 @@ opt_in_rules:
   - unneeded_parentheses_in_closure_argument # `{ x in ... }` over `{ (x) in ... }`
   - unowned_variable_capture                 # Be explicit about `[unowned self]` risks
   - untyped_error_in_catch                   # `catch let error as SomeError` over bare `catch`
-  - unused_capture_list                      # Drop empty `[]` capture lists
-  - unused_import                            # Remove unused `import`s
   - unused_parameter                         # Replace unused params with `_`
   - vertical_parameter_alignment_on_call     # Align continuation args under the first arg
   - vertical_whitespace_between_cases        # Blank line between non-trivial cases
@@ -119,6 +116,10 @@ opt_in_rules:
   - weak_delegate                            # Delegate properties should be `weak`
   - xct_specific_matcher                     # `XCTAssertEqual` over `XCTAssertTrue(a == b)`
   - yoda_condition                           # `if x == 5`, not `if 5 == x`
+
+analyzer_rules:
+  - unused_import                            # Remove unused `import`s
+  - unused_declaration
 
 disabled_rules:
   - todo                                     # TODOs are fine during development

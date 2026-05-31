@@ -8,6 +8,7 @@ struct MockDeviceService: DeviceService {
         self.operationDelay = operationDelay
     }
 
+    // swiftlint:disable:next function_body_length
     func fetchDevices() async throws -> Page<Device> {
         let now = Date()
         try await Task.sleep(for: operationDelay)

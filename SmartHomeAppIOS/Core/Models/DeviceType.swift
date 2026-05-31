@@ -1,4 +1,3 @@
-
 enum DeviceType: String, Codable, Hashable, CaseIterable {
     case speaker
     case plug
