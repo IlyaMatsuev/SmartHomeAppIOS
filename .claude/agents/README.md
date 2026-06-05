@@ -9,7 +9,7 @@ This directory contains prompt configurations for AI agents that assist with dev
 | **Architect**   | `architect.md`   | Plans feature implementations, designs architecture |
 | **Implementer** | `implementer.md` | Writes Swift code following Architect's plans       |
 | **Reviewer**    | `reviewer.md`    | Reviews code for quality and standards              |
-| **Tester**      | `tester.md`      | Writes XCTest unit and UI tests                     |
+| **Tester**      | `tester.md`      | Writes Swift Testing unit tests and XCUITest UI tests |
 | **StoryTeller** | `storyteller.md` | Creates documentation                               |
 
 ## Workflow
@@ -115,7 +115,7 @@ Each agent produces artifacts the next agent consumes:
 
 ### Tester Outputs
 
-- `*Tests.swift` (XCTest) files
+- `*Tests.swift` files — Swift Testing for unit tests, XCTest for UI tests
 - Mock / stub helpers
 - UI tests where appropriate
 

@@ -15,7 +15,7 @@ This is a **SwiftUI iOS app** using:
 - **State**: `@Observable` (Observation framework, iOS 17+) for new ViewModels; `@State` / `@Binding` / `@Environment` for view-local state
 - **Concurrency**: `async`/`await`, `Task`, `@MainActor`, `actor`
 - **Networking**: `URLSession` with `async`/`await` (`data(from:)`, `data(for:)`)
-- **Testing**: XCTest + XCUITest (mocks in `SmartHomeAppIOSTests/Mocks/`)
+- **Testing**: Swift Testing for unit tests, XCUITest for UI tests (mocks in `SmartHomeAppIOSTests/Mocks/`)
 
 ## Code Style Requirements
 

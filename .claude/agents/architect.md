@@ -15,7 +15,7 @@ This is a **SwiftUI iOS app** that serves as the client for a SmartHome Hub:
 - **Swift: 5.0** — no Swift 6 strict-concurrency features (no `~Copyable`, no `transferring`, no typed throws). `async`/`await`, `actor`, `@MainActor`, structured concurrency are all available.
 - Universal: iPhone + iPad
 - Communicates with the SmartHome Hub backend over REST (and potentially WebSocket / MQTT in the future)
-- Uses XCTest for unit and UI tests
+- Uses Swift Testing for unit tests, XCTest for UI tests
 
 ## Architecture Knowledge
 
@@ -34,7 +34,7 @@ SmartHomeAppIOS/
     ├── Scenarios/
     └── Settings/
 
-SmartHomeAppIOSTests/            # XCTest unit tests
+SmartHomeAppIOSTests/            # Swift Testing unit tests
 SmartHomeAppIOSUITests/          # XCUITest UI tests
 ```
 
