@@ -3,6 +3,10 @@ import SwiftUI
 struct DeviceListRow: View {
     let device: Device
 
+    @Environment(DevicesViewModel.self) private var viewModel
+
+    var loading: Bool { viewModel.isLoading(device) }
+
     var body: some View {
         HStack(spacing: 12) {
             Text(device.type.emoji)
@@ -20,6 +24,34 @@ struct DeviceListRow: View {
                 Text("\(device.type.label) · \(device.brand.label)")
                     .font(.subheadline)
                     .foregroundStyle(Color("TextSecondary"))
+            }
+
+            if !device.availableControls.isEmpty {
+                Spacer(minLength: 12)
+                HStack(spacing: 8) {
+                    ForEach(device.availableControls) { control in
+                        controlView(for: control)
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func controlView(for control: DeviceControlType) -> some View {
+        switch control {
+        case .toggle(let key, let value):
+            HStack(spacing: 6) {
+                if loading {
+                    ProgressView().controlSize(.small)
+                }
+                Toggle("", isOn: Binding(
+                    get: { value },
+                    set: { viewModel.toggle(device, key: key, to: $0) }
+                ))
+                .labelsHidden()
+                .tint(Color("AccentPrimary"))
+                .disabled(loading)
             }
         }
     }

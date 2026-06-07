@@ -43,7 +43,7 @@ struct DevicesView: View {
                         availableRooms: viewModel.availableRooms,
                         selection: $viewModel.selectedRoom,
                     )
-                    DeviceList(roomGroups: viewModel.visibleRoomGroups)
+                    DeviceList(roomGroups: viewModel.visibleRoomGroups).environment(viewModel)
                 }
             }
         }

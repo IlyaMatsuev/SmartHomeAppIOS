@@ -7,7 +7,9 @@ struct DeviceList: View {
         List {
             ForEach(roomGroups) { group in
                 Section {
-                    ForEach(group.devices) { DeviceListRow(device: $0) }
+                    ForEach(group.devices) { device in
+                        DeviceListRow(device: device)
+                    }
                 } header: {
                     Text("\(group.title) · \(group.devices.count)")
                 }

@@ -19,13 +19,14 @@ struct Device: Codable, Identifiable, Hashable {
     let zigbeeFriendlyName: String?
     let zigbeeIeeeAddress: String?
 
+    // TODO: Make controls "let"
     // "controls" and "measurements" might come undefined or empty
     // swiftlint:disable:next discouraged_optional_collection
-    let controls: [String: AnyCodable]?
+    var controls: [String: AnyCodable]?
     // swiftlint:disable:next discouraged_optional_collection
     let measurements: [String: AnyCodable]?
 
-    let controlsUpdatedAt: Date?
+    var controlsUpdatedAt: Date?
     let measurementsUpdatedAt: Date?
 
     let createdAt: Date
@@ -37,5 +38,18 @@ struct Device: Codable, Identifiable, Hashable {
 extension Device: Comparable {
     static func < (lhs: Device, rhs: Device) -> Bool {
         lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+    }
+}
+
+extension Device {
+    var availableControls: [DeviceControlType] {
+        guard let controls = controls else { return [] }
+        return controls
+            .compactMap { key, anyCodable -> DeviceControlType? in
+                if key == "on", let bool = anyCodable.value as? Bool {
+                    return .toggle(key: key, value: bool)
+                }
+                return nil
+            }
     }
 }

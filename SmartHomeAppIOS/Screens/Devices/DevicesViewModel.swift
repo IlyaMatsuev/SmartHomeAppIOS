@@ -1,5 +1,7 @@
 import Foundation
 import Observation
+import AnyCodable
+import os
 
 struct DeviceRoomGroup: Identifiable, Hashable {
     let room: DeviceRoom
@@ -12,6 +14,8 @@ struct DeviceRoomGroup: Identifiable, Hashable {
 @Observable
 @MainActor
 final class DevicesViewModel {
+    private static let logger = Logger(subsystem: "SmartHomeApp", category: "DevicesViewModel")
+
     enum LoadState: Equatable {
         case idle
         case loading
@@ -20,15 +24,16 @@ final class DevicesViewModel {
     }
 
     var selectedRoom: DeviceRoomFilter
+
     private(set) var state: LoadState = .idle
     // TODO: Maybe just store them as Dictionary with rooms as keys?
     private(set) var roomGroups: [DeviceRoomGroup] = []
 
+    private(set) var loadingDeviceIds: Set<String> = []
+
     private let service: DeviceService
 
-    var availableRooms: [DeviceRoom] {
-        roomGroups.map(\.room)
-    }
+    var availableRooms: [DeviceRoom] { roomGroups.map(\.room) }
 
     var visibleRoomGroups: [DeviceRoomGroup] {
         switch selectedRoom {
@@ -54,6 +59,53 @@ final class DevicesViewModel {
             state = .loaded
         } catch {
             state = .failed(error.localizedDescription)
+        }
+    }
+
+    func isLoading(_ device: Device) -> Bool {
+        loadingDeviceIds.contains(device.id)
+    }
+
+    func toggle(_ device: Device, key: String, to newValue: Bool) {
+        Task { await apply(.toggle(key: key, value: newValue), to: device) }
+    }
+
+    private func apply(_ change: DeviceControlType, to device: Device) async {
+        let previous = device
+
+        loadingDeviceIds.insert(device.id)
+        applyLocally(change, to: device)
+
+        do {
+            let updated = try await service.updateControl(deviceId: device.id, controlType: change)
+            replaceDevice(updated)
+        } catch {
+            replaceDevice(previous)
+            Self.logger.error("Error while updating a control for \"\(device.id)\": \(error.localizedDescription)")
+        }
+
+        loadingDeviceIds.remove(device.id)
+    }
+
+    private func applyLocally(_ change: DeviceControlType, to device: Device) {
+        var updated = device
+        var controls = updated.controls ?? [:]
+        switch change {
+        case .toggle(let key, let value):
+            controls[key] = AnyCodable(value)
+        }
+        updated.controls = controls
+        replaceDevice(updated)
+    }
+
+    private func replaceDevice(_ device: Device) {
+        roomGroups = roomGroups.map { group in
+            guard let index = group.devices.firstIndex(where: { $0.id == device.id }) else {
+                return group
+            }
+            var devices = group.devices
+            devices[index] = device
+            return DeviceRoomGroup(room: group.room, devices: devices.sorted())
         }
     }
 

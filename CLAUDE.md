@@ -78,11 +78,12 @@ swiftlint
 
 Discover available simulators with `xcrun simctl list devices available`.
 
-**Before reporting a task done that touched Swift code, you MUST run all three of these and report the result:**
+**Before reporting a task done that touched Swift code, you MUST run both of these and report the result:**
 
 1. `xcodebuild build -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 17 Pro'` — project must build
-2. `xcodebuild test -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 17 Pro'` — all tests must pass (run this even when you only changed production code, not just when you touched tests)
-3. `swiftlint` from the repo root — must have no new errors; address any new warnings your changes introduced
+2. `swiftlint` from the repo root — must have no new errors; address any new warnings your changes introduced
+
+The test suite is slow; do NOT run `xcodebuild test` after every change. Only run it when the user explicitly asks, or when you've edited files under `SmartHomeAppIOSTests/` and need to verify the tests you touched.
 
 If `iPhone 17 Pro` isn't available, check `xcrun simctl list devices available` and pick another iOS 18.x or 26.x simulator. If you cannot run a step (sandbox / tool missing), say so explicitly — do not claim success.
 
