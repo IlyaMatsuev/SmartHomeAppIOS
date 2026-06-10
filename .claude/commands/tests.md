@@ -13,7 +13,7 @@ Rules:
 - Do not add new XCTest-style files to the unit-test target. UI tests under `SmartHomeAppIOSUITests/` stay XCTest.
 - Match the existing test style and structure in the affected test files.
 - When the implementation moved/renamed things, move/rename the corresponding tests the same way rather than duplicating.
-- Run the affected tests (and then the full suite) via `xcodebuild test -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 17 Pro'` to confirm everything is green before reporting. If `iPhone 17 Pro` isn't available, pick another iOS 18.x or 26.x simulator from `xcrun simctl list devices available` — never claim success without a green run.
+- Run the affected tests (and then the whole unit suite) via the **UnitTests** plan — `xcodebuild test -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 13 mini' -testPlan UnitTests` — to confirm everything is green before reporting. Do not run the UI tests (`AllTests` plan) unless explicitly asked. If `iPhone 13 mini` isn't available, pick another iOS 18.x or 26.x simulator from `xcrun simctl list devices available` — never claim success without a green run.
 - Run `swiftlint` from the repo root after writing/updating any Swift file. Address any new warnings or errors the test files introduce before reporting done.
 
 Scope: $ARGUMENTS

@@ -38,6 +38,8 @@
 		90638B042FCA2E6800FD7F19 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 		90638B052FCA31D800FD7F19 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		90638B062FCA332700FD7F19 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		90D63E922FDA0D2F0090797B /* AllTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = AllTests.xctestplan; sourceTree = "<group>"; };
+		90D63E932FDA0D2F0090797B /* UnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UnitTests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -97,6 +99,8 @@
 				90380FE22FC7942E000FCB28 /* SmartHomeAppIOSTests */,
 				90380FEC2FC7942E000FCB28 /* SmartHomeAppIOSUITests */,
 				90380FD32FC7942C000FCB28 /* Products */,
+				90D63E922FDA0D2F0090797B /* AllTests.xctestplan */,
+				90D63E932FDA0D2F0090797B /* UnitTests.xctestplan */,
 				90638AE72FCA28BE00FD7F19 /* .gitignore */,
 				90638B032FCA2E6800FD7F19 /* .swiftlint.yaml */,
 				90638AE92FCA2BF600FD7F19 /* .claudeignore */,

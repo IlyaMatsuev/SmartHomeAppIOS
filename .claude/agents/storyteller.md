@@ -106,7 +106,8 @@ Open `SmartHomeAppIOS.xcodeproj` in Xcode 16+ and run on an iOS 17 simulator.
 ```bash
 xcodebuild test \
   -scheme SmartHomeAppIOS \
-  -destination 'platform=iOS Simulator,name=iPhone 15'
+  -destination 'platform=iOS Simulator,name=iPhone 13 mini' \
+  -testPlan UnitTests
 ```
 ```
 

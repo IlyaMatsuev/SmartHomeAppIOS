@@ -30,28 +30,34 @@ From the command line:
 
 ```bash
 # Build
-xcodebuild build -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+xcodebuild build -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 13 mini'
 
 # Discover available simulators
 xcrun simctl list devices available
 ```
 
-Substitute `iPhone 17 Pro` with whatever simulator you have installed.
+Substitute `iPhone 13 mini` with whatever simulator you have installed.
 
 ## Running tests
 
-Inside Xcode: `Cmd+U` runs all tests. `Ctrl+Opt+Cmd+U` runs the test under the cursor.
+The scheme ships two test plans: **UnitTests** (default — unit tests only, fast) and **AllTests** (unit + UI tests).
+
+Inside Xcode: `Cmd+U` runs the default plan (UnitTests). `Ctrl+Opt+Cmd+U` runs the test under the cursor. Switch plans from the Test Navigator's plan selector or `Product → Test Plan`.
 
 From the command line:
 
 ```bash
-# Full suite
-xcodebuild test -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+# Unit tests (fast — no UI tests)
+xcodebuild test -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 13 mini' -testPlan UnitTests
+
+# Everything, including UI tests
+xcodebuild test -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 13 mini' -testPlan AllTests
 
 # A single test method
 xcodebuild test \
   -scheme SmartHomeAppIOS \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+  -destination 'platform=iOS Simulator,name=iPhone 13 mini' \
+  -testPlan UnitTests \
   -only-testing:SmartHomeAppIOSTests/DevicesViewModelTests/loadGroupsDevicesByRoom
 ```
 

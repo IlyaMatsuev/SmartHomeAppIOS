@@ -305,20 +305,26 @@ If the coverage report flags a gap, ask whether the uncovered code is *behavior*
 
 ## Running Tests
 
+**After making changes, you MUST run the unit tests and report the result** — this is part of finishing the task, not optional. Always scope to the **UnitTests** plan (unit target only, no UI tests, coverage off). Do **not** run the UI tests (`AllTests` plan) unless the user explicitly asks for them.
+
 ```bash
-# All tests
+# Unit tests — the plan to run after every change (fast, no UI tests)
 xcodebuild test \
   -scheme SmartHomeAppIOS \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+  -destination 'platform=iOS Simulator,name=iPhone 13 mini' \
+  -testPlan UnitTests
 
 # A single Swift Testing test (note: dot path, not slash, for the method)
 xcodebuild test \
   -scheme SmartHomeAppIOS \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+  -destination 'platform=iOS Simulator,name=iPhone 13 mini' \
+  -testPlan UnitTests \
   -only-testing:SmartHomeAppIOSTests/DevicesViewModelTests/loadWhenServiceSucceedsSetsLoadedState
 
-# In Xcode: ⌘U
+# In Xcode: ⌘U (defaults to the UnitTests plan)
 ```
+
+If `iPhone 13 mini` isn't available, pick another iOS 18.x or 26.x simulator from `xcrun simctl list devices available`. Never claim success without a green run; if you can't run the tests (sandbox / tool missing), say so explicitly.
 
 ## Known Pitfalls
 

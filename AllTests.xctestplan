@@ -1,0 +1,36 @@
+{
+  "configurations" : [
+    {
+      "id" : "A7033841-2A32-41B8-8C27-99710BB8F71F",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:SmartHomeAppIOS.xcodeproj",
+      "identifier" : "90380FD12FC7942C000FCB28",
+      "name" : "SmartHomeAppIOS"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:SmartHomeAppIOS.xcodeproj",
+        "identifier" : "90380FDE2FC7942E000FCB28",
+        "name" : "SmartHomeAppIOSTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:SmartHomeAppIOS.xcodeproj",
+        "identifier" : "90380FE82FC7942E000FCB28",
+        "name" : "SmartHomeAppIOSUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

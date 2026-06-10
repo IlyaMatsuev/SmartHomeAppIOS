@@ -61,16 +61,28 @@ The full conventions are in [.claude/agents/implementer.md](.claude/agents/imple
 
 The scheme is **SmartHomeAppIOS**. Use an iPhone simulator on iOS 18.x.
 
+The scheme ships two test plans:
+
+- **UnitTests** (default) — unit target only, code coverage off. This is the fast loop; use it for everything except an explicit pre-push/CI check.
+- **AllTests** — unit + UI tests, coverage on. Only run this when the user explicitly asks for the UI tests.
+
 ```bash
 # Build
 xcodebuild build \
   -scheme SmartHomeAppIOS \
-  -destination 'platform=iOS Simulator,name=iPhone 16'
+  -destination 'platform=iOS Simulator,name=iPhone 13 mini'
 
-# Run all tests
+# Run unit tests (fast — no UI tests, no coverage)
 xcodebuild test \
   -scheme SmartHomeAppIOS \
-  -destination 'platform=iOS Simulator,name=iPhone 16'
+  -destination 'platform=iOS Simulator,name=iPhone 13 mini' \
+  -testPlan UnitTests
+
+# Run everything incl. UI tests (slow — only when explicitly asked)
+xcodebuild test \
+  -scheme SmartHomeAppIOS \
+  -destination 'platform=iOS Simulator,name=iPhone 13 mini' \
+  -testPlan AllTests
 
 # Lint (requires SwiftLint — see below)
 swiftlint
@@ -80,12 +92,12 @@ Discover available simulators with `xcrun simctl list devices available`.
 
 **Before reporting a task done that touched Swift code, you MUST run both of these and report the result:**
 
-1. `xcodebuild build -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 17 Pro'` — project must build
+1. `xcodebuild build -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 13 mini'` — project must build
 2. `swiftlint` from the repo root — must have no new errors; address any new warnings your changes introduced
 
-The test suite is slow; do NOT run `xcodebuild test` after every change. Only run it when the user explicitly asks, or when you've edited files under `SmartHomeAppIOSTests/` and need to verify the tests you touched.
+Don't run tests after every change. Run the **UnitTests** plan when the user explicitly asks, or when you've edited files under `SmartHomeAppIOSTests/` and need to verify the tests you touched. Always scope to `-testPlan UnitTests` — never run the UI tests (`AllTests`) unless the user explicitly asks for them.
 
-If `iPhone 17 Pro` isn't available, check `xcrun simctl list devices available` and pick another iOS 18.x or 26.x simulator. If you cannot run a step (sandbox / tool missing), say so explicitly — do not claim success.
+If `iPhone 13 mini` isn't available, check `xcrun simctl list devices available` and pick another iOS 18.x or 26.x simulator. If you cannot run a step (sandbox / tool missing), say so explicitly — do not claim success.
 
 ## Linting
 

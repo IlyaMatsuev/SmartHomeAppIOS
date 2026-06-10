@@ -222,4 +222,4 @@ import Combine         // Only if Combine is genuinely needed; prefer async/awai
 - Add a `#Preview` for screen-level views; for small components only when it actually aids iteration (multiple states, realistic surrounding context).
 - Follow file naming conventions (`PascalCase.swift`).
 - Keep public surface minimal — default to `internal`; use `private` for helpers; `public` only when crossing a module boundary.
-- Ensure code compiles (`xcodebuild -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 16' build`) and SwiftLint is clean (`swiftlint` from repo root).
+- Ensure code compiles (`xcodebuild -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 13 mini' build`) and SwiftLint is clean (`swiftlint` from repo root).
