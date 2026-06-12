@@ -11,6 +11,6 @@ struct MockServerConfigService: ServerConfigService {
 
     func isReachable(server: Server) async -> Bool {
         try? await Task.sleep(for: operationDelay)
-        return !server.remote && server.baseURL?.host == Self.reachableHost
+        return server.baseURL?.host == Self.reachableHost
     }
 }

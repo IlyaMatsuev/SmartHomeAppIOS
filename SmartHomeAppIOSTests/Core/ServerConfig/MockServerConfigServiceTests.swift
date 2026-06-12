@@ -24,8 +24,8 @@ struct MockServerConfigServiceTests {
     }
 
     @Test
-    func isReachableReturnsFalseForRemoteHubHome() async {
+    func isReachableIgnoresRemoteFlagWhenHostMatches() async {
         let server = Server(.https, "hub.home", remote: true)
-        #expect(!(await service.isReachable(server: server)))
+        #expect(await service.isReachable(server: server))
     }
 }

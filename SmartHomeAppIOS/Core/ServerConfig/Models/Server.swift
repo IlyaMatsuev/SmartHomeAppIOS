@@ -1,7 +1,8 @@
 import Foundation
 
 struct Server: Codable, Equatable, Sendable, Identifiable {
-    var addressProtocol: AddressProtocol
+    var label: String
+    var scheme: AddressScheme
     var address: String
     var remote: Bool
 
@@ -9,18 +10,26 @@ struct Server: Codable, Equatable, Sendable, Identifiable {
         address
     }
 
+    var fullURL: String {
+        "\(scheme)://\(address)"
+    }
+
     var baseURL: URL? {
         guard !address.isEmpty else { return nil }
-        let raw = "\(addressProtocol)://\(address)"
-        guard let components = URLComponents(string: raw), components.host?.isEmpty == false else {
+        guard let components = URLComponents(string: fullURL), components.host?.isEmpty == false else {
             return nil
         }
         return components.url
     }
 
-    init(_ addressProtocol: AddressProtocol = .http, _ address: String, remote: Bool = false) {
-        self.addressProtocol = addressProtocol
+    var valid: Bool {
+        !label.isEmpty && baseURL != nil
+    }
+
+    init(_ scheme: AddressScheme, _ address: String, remote: Bool = false, label: String = "") {
+        self.scheme = scheme
         self.address = address.trimmingCharacters(in: .whitespacesAndNewlines)
         self.remote = remote
+        self.label = label.isEmpty ? address : label
     }
 }

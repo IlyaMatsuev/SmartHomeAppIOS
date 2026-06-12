@@ -75,11 +75,11 @@ struct ServerConfigStoreTests {
     }
 
     @Test
-    func saveEmptyArrayBecomesUnconfigured() async throws {
+    func saveEmptyArrayBecomesUnconfiguredAndSkipsPersistence() async throws {
         try await store.save([])
 
         #expect(store.state == .unconfigured)
-        #expect(persistence.savedServers == [[]])
+        #expect(persistence.savedServers.isEmpty)
     }
 
     @Test
