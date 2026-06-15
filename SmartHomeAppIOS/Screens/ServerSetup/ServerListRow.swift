@@ -5,7 +5,7 @@ struct ServerListRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: server.remote ? "globe" : "house")
+            Image(systemName: server.iconSystemName)
                 .foregroundStyle(Color("AccentPrimary"))
                 .frame(width: 28)
 

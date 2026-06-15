@@ -26,6 +26,10 @@ struct Server: Codable, Equatable, Sendable, Identifiable {
         !label.isEmpty && baseURL != nil
     }
 
+    var iconSystemName: String {
+        remote ? "globe" : "house"
+    }
+
     init(_ scheme: AddressScheme, _ address: String, remote: Bool = false, label: String = "") {
         self.scheme = scheme
         self.address = address.trimmingCharacters(in: .whitespacesAndNewlines)

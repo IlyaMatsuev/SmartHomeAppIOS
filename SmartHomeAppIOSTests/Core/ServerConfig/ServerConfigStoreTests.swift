@@ -105,4 +105,107 @@ struct ServerConfigStoreTests {
         #expect(store.state == .unconfigured)
         #expect(persistence.clearCallCount == 1)
     }
+
+    // MARK: - selectedServer
+
+    @Test
+    func initialSelectedServerIsNil() {
+        #expect(store.selectedServer == nil)
+    }
+
+    @Test
+    func loadPicksFirstServerAsSelected() async {
+        let first = Server(.http, "hub.local:8080", remote: false, label: "Home")
+        let second = Server(.https, "remote.example.com", remote: true, label: "Cottage")
+        persistence.loadResult = .success([first, second])
+
+        await store.load()
+
+        #expect(store.selectedServer == first)
+    }
+
+    @Test
+    func loadWhenUnconfiguredLeavesSelectionNil() async {
+        persistence.loadResult = .success(nil)
+
+        await store.load()
+
+        #expect(store.selectedServer == nil)
+    }
+
+    @Test
+    func selectChangesSelectedServer() async throws {
+        let first = Server(.http, "hub.local:8080", remote: false, label: "Home")
+        let second = Server(.https, "remote.example.com", remote: true, label: "Cottage")
+        try await store.save([first, second])
+
+        store.select(second)
+
+        #expect(store.selectedServer == second)
+    }
+
+    @Test
+    func selectIgnoresUnknownServer() async throws {
+        let known = Server(.http, "hub.local:8080", remote: false, label: "Home")
+        try await store.save([known])
+        let stranger = Server(.http, "stranger.local", remote: false, label: "Stranger")
+
+        store.select(stranger)
+
+        #expect(store.selectedServer == known)
+    }
+
+    @Test
+    func selectNilIsNoOp() async throws {
+        let server = Server(.http, "hub.local:8080", remote: false, label: "Home")
+        try await store.save([server])
+
+        store.select(nil)
+
+        #expect(store.selectedServer == server)
+    }
+
+    @Test
+    func savePreservesSelectionWhenStillPresent() async throws {
+        let first = Server(.http, "hub.local:8080", remote: false, label: "Home")
+        let second = Server(.https, "remote.example.com", remote: true, label: "Cottage")
+        try await store.save([first, second])
+        store.select(second)
+
+        try await store.save([first, second])
+
+        #expect(store.selectedServer == second)
+    }
+
+    @Test
+    func saveResetsSelectionWhenRemoved() async throws {
+        let first = Server(.http, "hub.local:8080", remote: false, label: "Home")
+        let second = Server(.https, "remote.example.com", remote: true, label: "Cottage")
+        try await store.save([first, second])
+        store.select(second)
+
+        try await store.save([first])
+
+        #expect(store.selectedServer == first)
+    }
+
+    @Test
+    func saveEmptyClearsSelection() async throws {
+        let server = Server(.http, "hub.local:8080", remote: false, label: "Home")
+        try await store.save([server])
+
+        try await store.save([])
+
+        #expect(store.selectedServer == nil)
+    }
+
+    @Test
+    func clearResetsSelection() async throws {
+        let server = Server(.http, "hub.local:8080", remote: false, label: "Home")
+        try await store.save([server])
+
+        try await store.clear()
+
+        #expect(store.selectedServer == nil)
+    }
 }

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ServerSetupForm: View {
+    @Environment(\.dismiss) private var dismiss
     @Bindable var viewModel: ServerSetupViewModel
 
     var body: some View {
@@ -55,10 +56,15 @@ struct ServerSetupForm: View {
                 }
 
                 Button {
-                    Task { await viewModel.continueSetup() }
+                    Task {
+                        await viewModel.continueSetup()
+                        if viewModel.mode == .edit && viewModel.errorMessage == nil {
+                            dismiss()
+                        }
+                    }
                 } label: {
                     ZStack {
-                        Text("Continue")
+                        Text(viewModel.mode.buttonLabel)
                             .opacity(viewModel.loading ? 0 : 1)
                         if viewModel.loading {
                             ProgressView().tint(.white)

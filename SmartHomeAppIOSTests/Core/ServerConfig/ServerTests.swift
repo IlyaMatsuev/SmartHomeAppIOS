@@ -32,6 +32,20 @@ struct ServerTests {
         #expect(server.baseURL == nil)
     }
 
+    // MARK: - iconSystemName
+
+    @Test
+    func iconSystemNameForLocalServerIsHouse() {
+        let server = Server(.http, "hub.local:8080", remote: false)
+        #expect(server.iconSystemName == "house")
+    }
+
+    @Test
+    func iconSystemNameForRemoteServerIsGlobe() {
+        let server = Server(.https, "home.example.com", remote: true)
+        #expect(server.iconSystemName == "globe")
+    }
+
     // MARK: - Codable
 
     @Test

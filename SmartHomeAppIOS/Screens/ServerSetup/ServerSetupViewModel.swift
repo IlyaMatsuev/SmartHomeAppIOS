@@ -20,6 +20,7 @@ final class ServerSetupViewModel {
 
     private var editingServerId: String?
 
+    var mode: ServerSetupMode
     var servers: [Server] = []
 
     var draftServer: Server {
@@ -40,7 +41,8 @@ final class ServerSetupViewModel {
         !loading && !isServerFormOpen && !servers.isEmpty
     }
 
-    init(store: ServerConfigStore, service: ServerConfigService = MockServerConfigService()) {
+    init(mode: ServerSetupMode, store: ServerConfigStore, service: ServerConfigService = MockServerConfigService()) {
+        self.mode = mode
         self.store = store
         self.service = service
         self.servers = store.servers

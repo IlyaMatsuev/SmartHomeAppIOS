@@ -8,6 +8,11 @@ struct DevicesView: View {
             content
                 .navigationTitle("Devices")
                 .background(Color("BackgroundPrimary").ignoresSafeArea())
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        ServerSwitcherMenu()
+                    }
+                }
                 .task {
                     if viewModel.state == .idle {
                         await viewModel.load()
@@ -48,5 +53,9 @@ struct DevicesView: View {
 }
 
 #Preview {
-    DevicesView()
+    let server = Server(.http, "hub.local:8080", remote: false, label: "Home")
+    let store = ServerConfigStore(persistence: InMemoryServerConfigPersistence(initial: [server]))
+    return DevicesView()
+        .environment(store)
+        .task { await store.load() }
 }

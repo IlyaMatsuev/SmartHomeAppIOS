@@ -5,12 +5,21 @@ struct LoginView: View {
     @State private var viewModel: LoginViewModel?
 
     var body: some View {
-        ZStack {
-            Color("BackgroundPrimary").ignoresSafeArea()
+        NavigationStack {
+            ZStack {
+                Color("BackgroundPrimary").ignoresSafeArea()
 
-            if let viewModel {
-                LoginForm(viewModel: viewModel)
+                if let viewModel {
+                    LoginForm(viewModel: viewModel)
+                }
             }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    ServerSwitcherMenu()
+                }
+            }
+            .toolbarBackground(.hidden, for: .navigationBar)
+            .navigationBarTitleDisplayMode(.inline)
         }
         .onAppear {
             if viewModel == nil {
@@ -22,5 +31,10 @@ struct LoginView: View {
 
 #Preview {
     let sessionStore = SessionStore(service: MockAuthService(operationDelay: .zero), tokenStore: InMemoryTokenStore())
-    return LoginView().environment(sessionStore)
+    let server = Server(.http, "hub.local:8080", remote: false, label: "Home")
+    let serverStore = ServerConfigStore(persistence: InMemoryServerConfigPersistence(initial: [server]))
+    return LoginView()
+        .environment(sessionStore)
+        .environment(serverStore)
+        .task { await serverStore.load() }
 }

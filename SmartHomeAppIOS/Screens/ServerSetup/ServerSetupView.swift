@@ -4,6 +4,8 @@ struct ServerSetupView: View {
     @Environment(ServerConfigStore.self) private var serverConfigStore
     @State private var viewModel: ServerSetupViewModel?
 
+    var mode: ServerSetupMode = .initialSetup
+
     var body: some View {
         ZStack {
             Color("BackgroundPrimary").ignoresSafeArea()
@@ -14,7 +16,7 @@ struct ServerSetupView: View {
         }
         .onAppear {
             if viewModel == nil {
-                viewModel = ServerSetupViewModel(store: serverConfigStore)
+                viewModel = ServerSetupViewModel(mode: mode, store: serverConfigStore)
             }
         }
     }
