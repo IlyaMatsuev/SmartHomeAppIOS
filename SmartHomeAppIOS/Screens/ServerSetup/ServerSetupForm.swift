@@ -6,10 +6,14 @@ struct ServerSetupForm: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            if viewModel.mode == .edit {
+                topBar
+            }
             header
             ServerList(viewModel: viewModel)
             footer
         }
+        .gesture(edgeSwipeBackGesture)
         .fullScreenCover(isPresented: $viewModel.isServerFormOpen) {
             AddEditServerSheet(
                 viewModel: viewModel,
@@ -17,6 +21,38 @@ struct ServerSetupForm: View {
                 server: $viewModel.draftServer
             )
         }
+    }
+
+    private var topBar: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.headline)
+                    .foregroundStyle(Color("AccentPrimary"))
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityLabel("Back")
+
+            Spacer()
+        }
+        .padding(.horizontal, 12)
+        .padding(.top, 8)
+    }
+
+    private var edgeSwipeBackGesture: some Gesture {
+        DragGesture(minimumDistance: 20, coordinateSpace: .global)
+            .onEnded { value in
+                guard viewModel.mode == .edit else { return }
+                let startedFromLeftEdge = value.startLocation.x < 40
+                let swipedRight = value.translation.width > 80
+                let mostlyHorizontal = abs(value.translation.width) > abs(value.translation.height)
+                if startedFromLeftEdge && swipedRight && mostlyHorizontal {
+                    dismiss()
+                }
+            }
     }
 
     private var header: some View {
