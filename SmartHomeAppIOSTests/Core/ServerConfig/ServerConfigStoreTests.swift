@@ -75,11 +75,10 @@ struct ServerConfigStoreTests {
     }
 
     @Test
-    func saveEmptyArrayBecomesUnconfiguredAndSkipsPersistence() async throws {
-        try await store.save([])
-
-        #expect(store.state == .unconfigured)
-        #expect(persistence.savedServers.isEmpty)
+    func saveEmptyThrowsAnError() async throws {
+        await #expect(throws: ServerConfigError.emptyList) {
+            try await store.save([])
+        }
     }
 
     @Test
@@ -187,16 +186,6 @@ struct ServerConfigStoreTests {
         try await store.save([first])
 
         #expect(store.selectedServer == first)
-    }
-
-    @Test
-    func saveEmptyClearsSelection() async throws {
-        let server = Server(.http, "hub.local:8080", remote: false, label: "Home")
-        try await store.save([server])
-
-        try await store.save([])
-
-        #expect(store.selectedServer == nil)
     }
 
     @Test
