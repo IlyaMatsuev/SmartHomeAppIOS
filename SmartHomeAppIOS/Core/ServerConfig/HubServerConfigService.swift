@@ -10,9 +10,9 @@ struct HubServerConfigService: ServerConfigService {
 
     private static let logger = Logger(subsystem: "SmartHomeApp", category: "HubServerConfigService")
 
-    private let client: HubAPIClient
+    private let client: MyHomeAPIClient
 
-    init(client: HubAPIClient) {
+    init(client: MyHomeAPIClient) {
         self.client = client
     }
 

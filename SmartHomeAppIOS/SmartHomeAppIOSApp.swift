@@ -8,7 +8,7 @@ struct SmartHomeAppIOSApp: App {
 
     init() {
         let serverConfigStore = ServerConfigStore(persistence: UserDefaultsServerConfigPersistence())
-        let apiClient = LiveHubAPIClient()
+        let apiClient = HubAPIClient()
         let sessionStore = SessionStore(
             service: HubAuthService(client: apiClient),
             tokenStore: KeychainTokenStore()

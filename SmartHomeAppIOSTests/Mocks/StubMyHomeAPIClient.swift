@@ -1,7 +1,7 @@
 import Foundation
 @testable import SmartHomeAppIOS
 
-final class StubHubAPIClient: HubAPIClient, @unchecked Sendable {
+final class StubMyHomeAPIClient: MyHomeAPIClient, @unchecked Sendable {
     enum Response: Sendable {
         case data(Data)
         case error(Error)

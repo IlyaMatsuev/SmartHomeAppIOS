@@ -9,11 +9,11 @@ struct HubServerConfigServiceTests {
         {"label":"My Home Hub","address":"hub.home","port":443}
         """#.utf8)
 
-    private let client: StubHubAPIClient
+    private let client: StubMyHomeAPIClient
     private let service: HubServerConfigService
 
     init() {
-        client = StubHubAPIClient()
+        client = StubMyHomeAPIClient()
         service = HubServerConfigService(client: client)
     }
 

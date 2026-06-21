@@ -16,9 +16,9 @@ struct HubAuthService: AuthService {
         let refreshToken: String
     }
 
-    private let client: HubAPIClient
+    private let client: MyHomeAPIClient
 
-    init(client: HubAPIClient) {
+    init(client: MyHomeAPIClient) {
         self.client = client
     }
 

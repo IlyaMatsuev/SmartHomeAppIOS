@@ -3,11 +3,11 @@ import Testing
 @testable import SmartHomeAppIOS
 
 struct HubAuthServiceTests {
-    private let client: StubHubAPIClient
+    private let client: StubMyHomeAPIClient
     private let service: HubAuthService
 
     init() {
-        client = StubHubAPIClient()
+        client = StubMyHomeAPIClient()
         service = HubAuthService(client: client)
     }
 

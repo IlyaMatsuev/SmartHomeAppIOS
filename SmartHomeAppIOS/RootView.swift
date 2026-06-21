@@ -64,7 +64,7 @@ struct RootView: View {
 
 #Preview("Unconfigured (live)") {
     let serverConfigStore = ServerConfigStore(persistence: InMemoryServerConfigPersistence())
-    let apiClient = LiveHubAPIClient()
+    let apiClient = HubAPIClient()
     let sessionStore = SessionStore(
         service: HubAuthService(client: apiClient),
         tokenStore: InMemoryTokenStore()

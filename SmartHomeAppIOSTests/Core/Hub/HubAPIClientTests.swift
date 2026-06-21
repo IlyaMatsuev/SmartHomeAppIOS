@@ -6,7 +6,7 @@ import Testing
 
 @Suite(.serialized)
 // swiftlint:disable:next type_body_length
-struct LiveHubAPIClientTests {
+struct HubAPIClientTests {
     private struct SamplePayload: Codable, Equatable {
         let name: String
     }
@@ -15,11 +15,11 @@ struct LiveHubAPIClientTests {
     private static let token = AuthToken.fixture(accessToken: "test-token")
 
     private static func makeClient(
-        server: Server? = LiveHubAPIClientTests.server,
-        token: AuthToken? = LiveHubAPIClientTests.token,
+        server: Server? = HubAPIClientTests.server,
+        token: AuthToken? = HubAPIClientTests.token,
         handler: @escaping TestURLProtocol.Handler
-    ) -> LiveHubAPIClient {
-        let client = LiveHubAPIClient(session: .testSession(handler: handler))
+    ) -> HubAPIClient {
+        let client = HubAPIClient(session: .testSession(handler: handler))
         client.setServerProvider { server }
         client.setTokenProvider { token }
         return client
@@ -229,7 +229,7 @@ struct LiveHubAPIClientTests {
 
     @Test
     func sendThrowsNoServerSelectedBeforeServerProviderIsSet() async {
-        let client = LiveHubAPIClient(session: .testSession(handler: { _ in (HTTPURLResponse(), Data()) }))
+        let client = HubAPIClient(session: .testSession(handler: { _ in (HTTPURLResponse(), Data()) }))
 
         await #expect(throws: HubAPIError.noServerSelected) {
             let _: SamplePayload = try await client.send(.get("/devices"))
@@ -239,7 +239,7 @@ struct LiveHubAPIClientTests {
     @Test
     func setServerProviderReplacesServerUsedForSubsequentRequests() async throws {
         let captured = CapturedRequest()
-        let client = LiveHubAPIClient(session: .testSession(handler: { request in
+        let client = HubAPIClient(session: .testSession(handler: { request in
             captured.value = request
             return Self.okResponse(for: request, body: try Self.encode(SamplePayload(name: "x")))
         }))
@@ -258,7 +258,7 @@ struct LiveHubAPIClientTests {
     @Test
     func setTokenProviderReplacesTokenUsedForSubsequentRequests() async throws {
         let captured = CapturedRequest()
-        let client = LiveHubAPIClient(session: .testSession(handler: { request in
+        let client = HubAPIClient(session: .testSession(handler: { request in
             captured.value = request
             return Self.okResponse(for: request, body: try Self.encode(SamplePayload(name: "x")))
         }))
@@ -277,7 +277,7 @@ struct LiveHubAPIClientTests {
     @Test
     func protected401TriggersRefreshHandlerThenRetriesRequestOnce() async throws {
         let calls = RequestCounter()
-        let client = LiveHubAPIClient(session: .testSession(handler: { request in
+        let client = HubAPIClient(session: .testSession(handler: { request in
             calls.append(request)
             if calls.count == 1 {
                 return Self.response(for: request, status: 401)
@@ -297,7 +297,7 @@ struct LiveHubAPIClientTests {
     @Test
     func protected401SurfacesUnauthorizedWhenRefreshHandlerReturnsFalse() async throws {
         let calls = RequestCounter()
-        let client = LiveHubAPIClient(session: .testSession(handler: { request in
+        let client = HubAPIClient(session: .testSession(handler: { request in
             calls.append(request)
             return Self.response(for: request, status: 401)
         }))
@@ -314,7 +314,7 @@ struct LiveHubAPIClientTests {
     @Test
     func unprotected401DoesNotTriggerRefreshHandler() async {
         let handlerCalled = ActorFlag()
-        let client = LiveHubAPIClient(session: .testSession(handler: { request in
+        let client = HubAPIClient(session: .testSession(handler: { request in
             Self.response(for: request, status: 401)
         }))
         client.setServerProvider { Self.server }
@@ -335,7 +335,7 @@ struct LiveHubAPIClientTests {
         let captured = CapturedRequest()
         let calls = RequestCounter()
         let provider = TokenSwitcher(initial: AuthToken.fixture(accessToken: "old"))
-        let client = LiveHubAPIClient(session: .testSession(handler: { request in
+        let client = HubAPIClient(session: .testSession(handler: { request in
             calls.append(request)
             captured.value = request
             if calls.count == 1 {
