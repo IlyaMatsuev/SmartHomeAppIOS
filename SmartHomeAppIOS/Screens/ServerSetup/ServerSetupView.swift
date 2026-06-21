@@ -14,6 +14,8 @@ struct ServerSetupView: View {
                 ServerSetupForm(viewModel: viewModel)
             }
         }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.hidden, for: .navigationBar)
         .onAppear {
             if viewModel == nil {
                 viewModel = ServerSetupViewModel(mode: mode, store: serverConfigStore)
