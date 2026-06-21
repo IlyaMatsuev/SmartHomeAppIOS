@@ -24,7 +24,7 @@ struct ServerSetupForm: View {
             Text("Add your Home")
                 .font(.largeTitle.bold())
                 .foregroundStyle(Color("TextPrimary"))
-            Text("Add the addresses where your SmartHome Hub can be reached")
+            Text("Add the addresses where your My Home Hub can be reached")
                 .font(.subheadline)
                 .foregroundStyle(Color("TextSecondary"))
                 .multilineTextAlignment(.center)

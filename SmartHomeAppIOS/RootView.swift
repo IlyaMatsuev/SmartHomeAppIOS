@@ -62,6 +62,23 @@ struct RootView: View {
         .environment(serverConfigStore)
 }
 
+#Preview("Unconfigured (live)") {
+    let serverConfigStore = ServerConfigStore(persistence: InMemoryServerConfigPersistence())
+    let apiClient = LiveHubAPIClient()
+    let sessionStore = SessionStore(
+        service: HubAuthService(client: apiClient),
+        tokenStore: InMemoryTokenStore()
+    )
+    apiClient.setServerProvider { serverConfigStore.selectedServer }
+    apiClient.setTokenProvider { sessionStore.sessionToken }
+
+    let serverConfigService = HubServerConfigService(client: apiClient)
+    return RootView()
+        .environment(sessionStore)
+        .environment(serverConfigStore)
+        .environment(\.serverConfigService, serverConfigService)
+}
+
 #Preview("Configured and signed out") {
     let sessionStore = SessionStore(service: MockAuthService(), tokenStore: InMemoryTokenStore())
     let serverConfig = Server(.http, "hub.local:8080", remote: false)
