@@ -55,14 +55,14 @@ final class KeychainTokenStore: TokenStore {
 
     private func addKeychainItem(_ data: Data) throws {
         let status = SecItemAdd(keychainQuery.store(data), nil)
-        if (status != errSecSuccess) {
+        if status != errSecSuccess {
             throw TokenStoreError.keychain(status: status)
         }
     }
 
     private func deleteKeychainItem() throws {
         let status = SecItemDelete(keychainQuery.remove())
-        if (status != errSecSuccess && status != errSecItemNotFound) {
+        if status != errSecSuccess && status != errSecItemNotFound {
             throw TokenStoreError.keychain(status: status)
         }
     }
