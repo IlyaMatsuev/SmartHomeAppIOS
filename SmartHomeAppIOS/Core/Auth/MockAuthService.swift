@@ -21,4 +21,13 @@ struct MockAuthService: AuthService {
             refreshToken: "mock-refresh-token"
         )
     }
+
+    func loginRefresh(refreshToken: String) async throws -> AuthToken {
+        try await Task.sleep(for: operationDelay)
+        return AuthToken(
+            externalId: "mock-external-id",
+            accessToken: "refreshed-access-token",
+            refreshToken: "mock-refresh-token"
+        )
+    }
 }

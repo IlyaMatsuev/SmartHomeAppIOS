@@ -30,4 +30,14 @@ struct MockAuthServiceTests {
             _ = try await service.login(email: validEmail, password: "nope")
         }
     }
+
+    // MARK: - refresh()
+
+    @Test
+    func refreshReturnsANewAccessTokenForAnyRefreshToken() async throws {
+        let token = try await service.loginRefresh(refreshToken: "anything")
+
+        #expect(!token.accessToken.isEmpty)
+        #expect(!token.refreshToken.isEmpty)
+    }
 }

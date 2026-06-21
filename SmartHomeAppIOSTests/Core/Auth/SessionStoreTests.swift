@@ -86,4 +86,63 @@ struct SessionStoreTests {
         #expect(store.state == .unauthenticated)
         #expect(tokenStore.savedTokens.isEmpty)
     }
+
+    // MARK: - refresh()
+
+    @Test
+    func refreshWhenUnauthenticatedReturnsFalseAndDoesNotCallService() async {
+        await store.load()
+        #expect(store.state == .unauthenticated)
+
+        let succeeded = await store.refresh()
+
+        #expect(!succeeded)
+        #expect(service.refreshCalls.isEmpty)
+        #expect(store.state == .unauthenticated)
+    }
+
+    @Test
+    func refreshOnSuccessReturnsTrueAndSavesNewToken() async throws {
+        let original = AuthToken.fixture(accessToken: "old-access", refreshToken: "old-refresh")
+        tokenStore.loadResult = .success(original)
+        await store.load()
+
+        let renewed = AuthToken.fixture(accessToken: "new-access", refreshToken: "new-refresh")
+        service.refreshResult = .success(renewed)
+
+        let succeeded = await store.refresh()
+
+        #expect(succeeded)
+        #expect(service.refreshCalls == ["old-refresh"])
+        #expect(tokenStore.savedTokens == [renewed])
+        #expect(store.state == .authenticated(AuthSession(token: renewed)))
+    }
+
+    @Test
+    func refreshOnSessionExpiredReturnsFalseClearsSessionAndBecomesUnauthenticated() async {
+        let original = AuthToken.fixture(accessToken: "old", refreshToken: "expired-refresh")
+        tokenStore.loadResult = .success(original)
+        await store.load()
+        service.refreshResult = .failure(AuthError.sessionExpired)
+
+        let succeeded = await store.refresh()
+
+        #expect(!succeeded)
+        #expect(store.state == .unauthenticated)
+        #expect(tokenStore.clearCallCount == 1)
+    }
+
+    @Test
+    func refreshOnUnexpectedErrorReturnsFalseAndPreservesSession() async {
+        let original = AuthToken.fixture(accessToken: "old", refreshToken: "refresh")
+        tokenStore.loadResult = .success(original)
+        await store.load()
+        service.refreshResult = .failure(AuthError.unexpected)
+
+        let succeeded = await store.refresh()
+
+        #expect(!succeeded)
+        #expect(store.state == .authenticated(AuthSession(token: original)))
+        #expect(tokenStore.clearCallCount == 0)
+    }
 }

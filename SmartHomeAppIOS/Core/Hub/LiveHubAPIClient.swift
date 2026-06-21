@@ -1,7 +1,7 @@
 import Foundation
 import os
 
-/// Token provider is mutated only during app construction (see `SmartHomeAppIOSApp`),
+/// Providers are mutated only during app construction (see `SmartHomeAppIOSApp`),
 /// then read by request handling — hence `@unchecked Sendable`.
 final class LiveHubAPIClient: HubAPIClient, @unchecked Sendable {
     private static let logger = Logger(subsystem: "SmartHomeApp", category: "LiveHubAPIClient")
@@ -10,11 +10,13 @@ final class LiveHubAPIClient: HubAPIClient, @unchecked Sendable {
 
     private var currentServer: @MainActor @Sendable () -> Server?
     private var currentToken: @MainActor @Sendable () -> AuthToken?
+    private var refreshHandler: @MainActor @Sendable () async -> Bool
 
     init(session: URLSession = .shared) {
         self.session = session
         self.currentServer = { nil }
         self.currentToken = { nil }
+        self.refreshHandler = { false }
     }
 
     func setServerProvider(_ provider: @escaping @MainActor @Sendable () -> Server?) {
@@ -23,6 +25,10 @@ final class LiveHubAPIClient: HubAPIClient, @unchecked Sendable {
 
     func setTokenProvider(_ provider: @escaping @MainActor @Sendable () -> AuthToken?) {
         currentToken = provider
+    }
+
+    func setRefreshHandler(_ handler: @escaping @MainActor @Sendable () async -> Bool) {
+        refreshHandler = handler
     }
 
     func send<T: Decodable & Sendable>(_ request: HubRequest) async throws -> T {
@@ -56,6 +62,18 @@ final class LiveHubAPIClient: HubAPIClient, @unchecked Sendable {
     }
 
     private func perform(_ request: HubRequest, server: Server) async throws -> Data {
+        do {
+            return try await performOnce(request, server: server)
+        } catch HubAPIError.unauthorized where request.protected {
+            Self.logger.log("Received 401 on protected request — attempting refresh")
+            if await refreshHandler() {
+                return try await performOnce(request, server: server)
+            }
+            throw HubAPIError.unauthorized
+        }
+    }
+
+    private func performOnce(_ request: HubRequest, server: Server) async throws -> Data {
         guard let baseURL = server.baseURL else {
             throw HubAPIError.noServerSelected
         }

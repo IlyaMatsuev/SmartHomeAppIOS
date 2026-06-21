@@ -15,6 +15,7 @@ struct SmartHomeAppIOSApp: App {
         )
         apiClient.setServerProvider { serverConfigStore.selectedServer }
         apiClient.setTokenProvider { sessionStore.sessionToken }
+        apiClient.setRefreshHandler { await sessionStore.refresh() }
 
         self.serverConfigStore = serverConfigStore
         self.sessionStore = sessionStore

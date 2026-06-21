@@ -26,7 +26,7 @@ final class SessionStore {
     }
 
     var sessionToken: AuthToken? {
-        return session == nil ? nil : session?.token
+        session?.token
     }
 
     init(service: AuthService, tokenStore: TokenStore) {
@@ -51,5 +51,24 @@ final class SessionStore {
         let token = try await service.login(email: email, password: password)
         try tokenStore.save(token)
         state = .authenticated(AuthSession(token: token))
+    }
+
+    func refresh() async -> Bool {
+        do {
+            guard let token = sessionToken else {
+                throw AuthError.sessionExpired
+            }
+            let newToken = try await service.loginRefresh(refreshToken: token.refreshToken)
+            try tokenStore.save(newToken)
+            state = .authenticated(AuthSession(token: newToken))
+            return true
+        } catch AuthError.sessionExpired {
+            Self.logger.error("Refresh token rejected — clearing session")
+            try? tokenStore.clear()
+            state = .unauthenticated
+        } catch {
+            Self.logger.error("Token refresh failed: \(error.localizedDescription)")
+        }
+        return false
     }
 }

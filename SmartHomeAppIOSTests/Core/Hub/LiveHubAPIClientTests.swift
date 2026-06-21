@@ -2,7 +2,10 @@ import Foundation
 import Testing
 @testable import SmartHomeAppIOS
 
+// swiftlint:disable file_length
+
 @Suite(.serialized)
+// swiftlint:disable:next type_body_length
 struct LiveHubAPIClientTests {
     private struct SamplePayload: Codable, Equatable {
         let name: String
@@ -269,6 +272,90 @@ struct LiveHubAPIClientTests {
         #expect(try #require(captured.value).value(forHTTPHeaderField: "Authorization") == "Bearer later-token")
     }
 
+    // MARK: - setRefreshHandler — 401 retry
+
+    @Test
+    func protected401TriggersRefreshHandlerThenRetriesRequestOnce() async throws {
+        let calls = RequestCounter()
+        let client = LiveHubAPIClient(session: .testSession(handler: { request in
+            calls.append(request)
+            if calls.count == 1 {
+                return Self.response(for: request, status: 401)
+            }
+            return Self.okResponse(for: request, body: try Self.encode(SamplePayload(name: "ok")))
+        }))
+        client.setServerProvider { Self.server }
+        client.setTokenProvider { Self.token }
+        client.setRefreshHandler { true }
+
+        let result: SamplePayload = try await client.send(.get("/devices"))
+
+        #expect(result == SamplePayload(name: "ok"))
+        #expect(calls.count == 2)
+    }
+
+    @Test
+    func protected401SurfacesUnauthorizedWhenRefreshHandlerReturnsFalse() async throws {
+        let calls = RequestCounter()
+        let client = LiveHubAPIClient(session: .testSession(handler: { request in
+            calls.append(request)
+            return Self.response(for: request, status: 401)
+        }))
+        client.setServerProvider { Self.server }
+        client.setTokenProvider { Self.token }
+        client.setRefreshHandler { false }
+
+        await #expect(throws: HubAPIError.unauthorized) {
+            let _: SamplePayload = try await client.send(.get("/devices"))
+        }
+        #expect(calls.count == 1)
+    }
+
+    @Test
+    func unprotected401DoesNotTriggerRefreshHandler() async {
+        let handlerCalled = ActorFlag()
+        let client = LiveHubAPIClient(session: .testSession(handler: { request in
+            Self.response(for: request, status: 401)
+        }))
+        client.setServerProvider { Self.server }
+        client.setTokenProvider { Self.token }
+        client.setRefreshHandler {
+            handlerCalled.set()
+            return true
+        }
+
+        await #expect(throws: HubAPIError.unauthorized) {
+            let _: SamplePayload = try await client.send(.get("/auth/login", protected: false))
+        }
+        #expect(!handlerCalled.value)
+    }
+
+    @Test
+    func retryAfterRefreshUsesNewBearerToken() async throws {
+        let captured = CapturedRequest()
+        let calls = RequestCounter()
+        let provider = TokenSwitcher(initial: AuthToken.fixture(accessToken: "old"))
+        let client = LiveHubAPIClient(session: .testSession(handler: { request in
+            calls.append(request)
+            captured.value = request
+            if calls.count == 1 {
+                return Self.response(for: request, status: 401)
+            }
+            return Self.okResponse(for: request, body: try Self.encode(SamplePayload(name: "ok")))
+        }))
+        client.setServerProvider { Self.server }
+        client.setTokenProvider { provider.current }
+        client.setRefreshHandler {
+            provider.set(AuthToken.fixture(accessToken: "new"))
+            return true
+        }
+
+        let _: SamplePayload = try await client.send(.get("/devices"))
+
+        let request = try #require(captured.value)
+        #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer new")
+    }
+
     // MARK: - transport errors
 
     @Test
@@ -291,6 +378,23 @@ struct LiveHubAPIClientTests {
 
 private final class CapturedRequest: @unchecked Sendable {
     var value: URLRequest?
+}
+
+private final class RequestCounter: @unchecked Sendable {
+    private(set) var count: Int = 0
+    func append(_ request: URLRequest) { count += 1 }
+}
+
+private final class ActorFlag: @unchecked Sendable {
+    private(set) var value: Bool = false
+    func set() { value = true }
+}
+
+private final class TokenSwitcher: @unchecked Sendable {
+    private var token: AuthToken
+    init(initial: AuthToken) { token = initial }
+    var current: AuthToken? { token }
+    func set(_ next: AuthToken) { token = next }
 }
 
 private extension URLRequest {

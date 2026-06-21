@@ -6,7 +6,11 @@ struct HubAuthService: AuthService {
         let password: String
     }
 
-    private struct LoginResponse: Decodable {
+    private struct RefreshRequest: Encodable {
+        let refreshToken: String
+    }
+
+    private struct TokenResponse: Decodable {
         let externalId: String
         let accessToken: String
         let refreshToken: String
@@ -22,7 +26,7 @@ struct HubAuthService: AuthService {
         do {
             let body = LoginRequest(email: email, password: password)
             let request = try HubRequest.put("/auth/login", body, protected: false)
-            let response: LoginResponse = try await client.send(request)
+            let response: TokenResponse = try await client.send(request)
             return AuthToken(
                 externalId: response.externalId,
                 accessToken: response.accessToken,
@@ -30,6 +34,23 @@ struct HubAuthService: AuthService {
             )
         } catch HubAPIError.unauthorized {
             throw AuthError.invalidLoginCredentials
+        } catch {
+            throw AuthError.unexpected
+        }
+    }
+
+    func loginRefresh(refreshToken: String) async throws -> AuthToken {
+        do {
+            let body = RefreshRequest(refreshToken: refreshToken)
+            let request = try HubRequest.put("/auth/login/refresh", body, protected: false)
+            let response: TokenResponse = try await client.send(request)
+            return AuthToken(
+                externalId: response.externalId,
+                accessToken: response.accessToken,
+                refreshToken: response.refreshToken
+            )
+        } catch HubAPIError.unauthorized {
+            throw AuthError.sessionExpired
         } catch {
             throw AuthError.unexpected
         }
