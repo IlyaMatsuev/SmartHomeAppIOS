@@ -48,6 +48,7 @@ final class ServerConfigStore {
     func save(_ servers: [Server]) async throws {
         if servers.isEmpty {
             state = .unconfigured
+            throw ServerConfigError.emptyList
         } else {
             try persistence.save(servers)
             state = .configured(servers)

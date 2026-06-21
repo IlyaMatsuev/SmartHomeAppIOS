@@ -22,7 +22,7 @@ struct ServerSwitcherMenu: View {
                 switcher
             }
             .accessibilityLabel("Switch server")
-            .fullScreenCover(isPresented: $showServerSetupScreen) {
+            .navigationDestination(isPresented: $showServerSetupScreen) {
                 ServerSetupView(mode: .edit)
             }
         }
