@@ -47,8 +47,8 @@ final class RegistrationStore {
         }
     }
 
-    func requestAccess(email: String) async throws {
-        let request = try await service.requestAccess(email: email)
+    func requestAccess(email: String, comment: String?) async throws {
+        let request = try await service.requestAccess(email: email, comment: comment)
         try? persistence.save(request)
         state = .pending(request)
     }

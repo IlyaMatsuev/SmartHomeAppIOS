@@ -9,7 +9,7 @@ struct MockRegistrationService: RegistrationService {
         self.resolvedStatus = status
     }
 
-    func requestAccess(email: String) async throws -> RegistrationRequest {
+    func requestAccess(email: String, comment _: String?) async throws -> RegistrationRequest {
         try await Task.sleep(for: operationDelay)
         return RegistrationRequest(
             externalId: "mock-registration-id",

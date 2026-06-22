@@ -14,6 +14,9 @@ final class RegistrationRequestViewModel {
     var email: String = "" {
         didSet { errorMessage = nil }
     }
+    var comment: String = "" {
+        didSet { errorMessage = nil }
+    }
 
     var isEmailValid: Bool {
         !email.isEmpty && (try? Self.emailRegex.wholeMatch(in: email)) != nil
@@ -37,7 +40,11 @@ final class RegistrationRequestViewModel {
         loading = true
         errorMessage = nil
         do {
-            try await registrationStore.requestAccess(email: email)
+            let trimmedComment = comment.trimmingCharacters(in: .whitespacesAndNewlines)
+            try await registrationStore.requestAccess(
+                email: email,
+                comment: trimmedComment.isEmpty ? nil : trimmedComment
+            )
         } catch {
             errorMessage = error.localizedDescription
         }

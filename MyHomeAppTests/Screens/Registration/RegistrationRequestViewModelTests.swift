@@ -51,8 +51,29 @@ struct RegistrationRequestViewModelTests {
 
         #expect(service.requestAccessCallCount == 1)
         #expect(service.requestedEmails == ["new@home.dev"])
+        #expect(service.requestedComments == [nil])
         #expect(store.hasPendingRequest)
         #expect(viewModel.errorMessage == nil)
+    }
+
+    @Test
+    func submitForwardsTrimmedCommentWhenProvided() async {
+        viewModel.email = "new@home.dev"
+        viewModel.comment = "  Please add me  "
+
+        await viewModel.submit()
+
+        #expect(service.requestedComments == ["Please add me"])
+    }
+
+    @Test
+    func submitSendsNilCommentWhenBlank() async {
+        viewModel.email = "new@home.dev"
+        viewModel.comment = "   \n  "
+
+        await viewModel.submit()
+
+        #expect(service.requestedComments == [nil])
     }
 
     @Test

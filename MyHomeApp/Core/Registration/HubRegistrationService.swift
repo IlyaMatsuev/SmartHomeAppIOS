@@ -3,6 +3,7 @@ import Foundation
 struct HubRegistrationService: RegistrationService {
     private struct CreateRequest: Encodable {
         let email: String
+        let comment: String?
     }
 
     private struct CreateResponse: Decodable {
@@ -19,9 +20,9 @@ struct HubRegistrationService: RegistrationService {
         self.client = client
     }
 
-    func requestAccess(email: String) async throws -> RegistrationRequest {
+    func requestAccess(email: String, comment: String?) async throws -> RegistrationRequest {
         do {
-            let body = CreateRequest(email: email)
+            let body = CreateRequest(email: email, comment: comment)
             let request = try HubRequest.post("/auth/register/requests", body, protected: false)
             let response: CreateResponse = try await client.send(request)
             return RegistrationRequest(externalId: response.externalId, email: email, status: .pending)

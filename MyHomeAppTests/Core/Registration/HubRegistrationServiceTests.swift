@@ -17,7 +17,7 @@ struct HubRegistrationServiceTests {
     func requestAccessSendsPostToRegisterRequestsAsUnprotected() async throws {
         client.response = .data(Self.encodeCreateResponse(externalId: "req-1"))
 
-        _ = try await service.requestAccess(email: "new@home.dev")
+        _ = try await service.requestAccess(email: "new@home.dev", comment: nil)
 
         #expect(client.sentRequests.count == 1)
         let request = try #require(client.sentRequests.first)
@@ -27,22 +27,34 @@ struct HubRegistrationServiceTests {
     }
 
     @Test
-    func requestAccessSendsEmailInRequestBody() async throws {
+    func requestAccessSendsEmailWithoutCommentInRequestBody() async throws {
         client.response = .data(Self.encodeCreateResponse(externalId: "req-1"))
 
-        _ = try await service.requestAccess(email: "new@home.dev")
+        _ = try await service.requestAccess(email: "new@home.dev", comment: nil)
 
         let request = try #require(client.sentRequests.first)
         let body = try #require(request.body)
         let decoded = try JSONDecoder().decode(CreateRequestPayload.self, from: body)
-        #expect(decoded == CreateRequestPayload(email: "new@home.dev"))
+        #expect(decoded == CreateRequestPayload(email: "new@home.dev", comment: nil))
+    }
+
+    @Test
+    func requestAccessSendsCommentInRequestBodyWhenProvided() async throws {
+        client.response = .data(Self.encodeCreateResponse(externalId: "req-1"))
+
+        _ = try await service.requestAccess(email: "new@home.dev", comment: "Please let me in")
+
+        let request = try #require(client.sentRequests.first)
+        let body = try #require(request.body)
+        let decoded = try JSONDecoder().decode(CreateRequestPayload.self, from: body)
+        #expect(decoded == CreateRequestPayload(email: "new@home.dev", comment: "Please let me in"))
     }
 
     @Test
     func requestAccessReturnsPendingRequestWithExternalIdAndEmail() async throws {
         client.response = .data(Self.encodeCreateResponse(externalId: "req-42"))
 
-        let result = try await service.requestAccess(email: "new@home.dev")
+        let result = try await service.requestAccess(email: "new@home.dev", comment: nil)
 
         #expect(result == RegistrationRequest(externalId: "req-42", email: "new@home.dev", status: .pending))
     }
@@ -52,7 +64,7 @@ struct HubRegistrationServiceTests {
         client.response = .error(HubAPIError.http(status: 409, body: nil))
 
         await #expect(throws: RegistrationError.alreadyRequested) {
-            _ = try await service.requestAccess(email: "dup@home.dev")
+            _ = try await service.requestAccess(email: "dup@home.dev", comment: nil)
         }
     }
 
@@ -61,7 +73,7 @@ struct HubRegistrationServiceTests {
         client.response = .error(HubAPIError.transport)
 
         await #expect(throws: RegistrationError.unexpected) {
-            _ = try await service.requestAccess(email: "x@home.dev")
+            _ = try await service.requestAccess(email: "x@home.dev", comment: nil)
         }
     }
 
@@ -70,7 +82,7 @@ struct HubRegistrationServiceTests {
         client.response = .data(Data("not-json".utf8))
 
         await #expect(throws: RegistrationError.unexpected) {
-            _ = try await service.requestAccess(email: "x@home.dev")
+            _ = try await service.requestAccess(email: "x@home.dev", comment: nil)
         }
     }
 
@@ -121,6 +133,7 @@ struct HubRegistrationServiceTests {
 
     private struct CreateRequestPayload: Codable, Equatable {
         let email: String
+        let comment: String?
     }
 
     private struct CreateResponsePayload: Encodable {

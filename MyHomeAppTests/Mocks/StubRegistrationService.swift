@@ -9,12 +9,14 @@ final class StubRegistrationService: RegistrationService, @unchecked Sendable {
 
     private(set) var requestAccessCallCount = 0
     private(set) var requestedEmails: [String] = []
+    private(set) var requestedComments: [String?] = []
     private(set) var checkStatusCallCount = 0
     private(set) var checkedRequestIds: [String] = []
 
-    func requestAccess(email: String) async throws -> RegistrationRequest {
+    func requestAccess(email: String, comment: String?) async throws -> RegistrationRequest {
         requestAccessCallCount += 1
         requestedEmails.append(email)
+        requestedComments.append(comment)
         return try requestAccessResult.get()
     }
 

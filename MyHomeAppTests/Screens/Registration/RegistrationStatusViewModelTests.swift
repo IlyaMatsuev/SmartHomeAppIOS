@@ -16,7 +16,7 @@ struct RegistrationStatusViewModelTests {
 
     private func seedPendingRequest(_ request: RegistrationRequest) async {
         service.requestAccessResult = .success(request)
-        try? await store.requestAccess(email: request.email)
+        try? await store.requestAccess(email: request.email, comment: nil)
     }
 
     // MARK: - request

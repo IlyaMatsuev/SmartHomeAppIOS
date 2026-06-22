@@ -53,7 +53,7 @@ struct RegistrationStoreTests {
         let request = RegistrationRequest(externalId: "r-9", email: "new@home.dev", status: .pending)
         service.requestAccessResult = .success(request)
 
-        try await store.requestAccess(email: "new@home.dev")
+        try await store.requestAccess(email: "new@home.dev", comment: nil)
 
         #expect(service.requestedEmails == ["new@home.dev"])
         #expect(persistence.savedRequests == [request])
@@ -66,7 +66,7 @@ struct RegistrationStoreTests {
         service.requestAccessResult = .failure(RegistrationError.alreadyRequested)
 
         await #expect(throws: RegistrationError.alreadyRequested) {
-            try await store.requestAccess(email: "x@y.dev")
+            try await store.requestAccess(email: "x@y.dev", comment: nil)
         }
 
         #expect(store.state == .absent)

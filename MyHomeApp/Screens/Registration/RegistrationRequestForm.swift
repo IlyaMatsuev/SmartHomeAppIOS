@@ -6,11 +6,26 @@ struct RegistrationRequestForm: View {
     var body: some View {
         VStack(spacing: 24) {
             header
-            EmailField(email: $viewModel.email, invalidEmail: viewModel.showEmailError)
+            fields
             errorText
             requestButton
         }
         .padding(.horizontal, 24)
+    }
+
+    private var fields: some View {
+        VStack(spacing: 12) {
+            EmailField(email: $viewModel.email, invalidEmail: viewModel.showEmailError)
+            commentField
+        }
+    }
+
+    private var commentField: some View {
+        TextField("Comment (optional)", text: $viewModel.comment, axis: .vertical)
+            .lineLimit(3...6)
+            .padding()
+            .background(Color("BackgroundSecondary"))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     private var header: some View {
