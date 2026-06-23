@@ -73,6 +73,41 @@ struct HubAPIClientTests {
     }
 
     @Test
+    func sendAttachesQueryItemsFromRequestQueryToURL() async throws {
+        let captured = CapturedRequest()
+        let client = Self.makeClient { request in
+            captured.value = request
+            return Self.okResponse(for: request, body: try Self.encode(SamplePayload(name: "x")))
+        }
+
+        let _: SamplePayload = try await client.send(.get("/devices", ["pageSize": "20"]))
+
+        let request = try #require(captured.value)
+        let url = try #require(request.url)
+        #expect(url.absoluteString == "http://hub.local:8080/devices?pageSize=20")
+        let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: false))
+        #expect(components.path == "/devices")
+        #expect(components.queryItems == [URLQueryItem(name: "pageSize", value: "20")])
+    }
+
+    @Test
+    func sendOmitsQueryStringWhenRequestQueryIsEmpty() async throws {
+        let captured = CapturedRequest()
+        let client = Self.makeClient { request in
+            captured.value = request
+            return Self.okResponse(for: request, body: try Self.encode(SamplePayload(name: "x")))
+        }
+
+        let _: SamplePayload = try await client.send(.get("/devices"))
+
+        let request = try #require(captured.value)
+        let url = try #require(request.url)
+        #expect(url.absoluteString == "http://hub.local:8080/devices")
+        let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: false))
+        #expect(components.queryItems == nil)
+    }
+
+    @Test
     func sendAttachesJSONBodyAndContentTypeOnPost() async throws {
         let captured = CapturedRequest()
         let client = Self.makeClient { request in

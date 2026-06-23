@@ -15,7 +15,7 @@ struct HubRequestTests {
         let request = HubRequest.get("/devices")
 
         #expect(request.method == .get)
-        #expect(request.uri == "/devices")
+        #expect(request.path == "/devices")
         #expect(request.body == nil)
         #expect(request.protected == true)
     }
@@ -27,6 +27,21 @@ struct HubRequestTests {
         #expect(request.protected == false)
     }
 
+    @Test
+    func getDefaultsToEmptyQuery() {
+        let request = HubRequest.get("/devices")
+
+        #expect(request.query.isEmpty)
+    }
+
+    @Test
+    func getCarriesQueryDictionary() {
+        let request = HubRequest.get("/devices", ["pageSize": "20", "room": "kitchen"])
+
+        #expect(request.path == "/devices")
+        #expect(request.query == ["pageSize": "20", "room": "kitchen"])
+    }
+
     // MARK: - delete()
 
     @Test
@@ -34,9 +49,24 @@ struct HubRequestTests {
         let request = HubRequest.delete("/devices/42")
 
         #expect(request.method == .delete)
-        #expect(request.uri == "/devices/42")
+        #expect(request.path == "/devices/42")
         #expect(request.body == nil)
         #expect(request.protected == true)
+    }
+
+    @Test
+    func deleteDefaultsToEmptyQuery() {
+        let request = HubRequest.delete("/devices/42")
+
+        #expect(request.query.isEmpty)
+    }
+
+    @Test
+    func deleteCarriesQueryDictionary() {
+        let request = HubRequest.delete("/devices", ["force": "true"])
+
+        #expect(request.path == "/devices")
+        #expect(request.query == ["force": "true"])
     }
 
     // MARK: - post()
@@ -47,7 +77,7 @@ struct HubRequestTests {
         let request = try HubRequest.post("/devices", payload)
 
         #expect(request.method == .post)
-        #expect(request.uri == "/devices")
+        #expect(request.path == "/devices")
         #expect(request.protected == true)
         let body = try #require(request.body)
         let decoded = try JSONDecoder().decode(SampleBody.self, from: body)
@@ -69,7 +99,7 @@ struct HubRequestTests {
         let request = try HubRequest.put("/rooms/kitchen", payload)
 
         #expect(request.method == .put)
-        #expect(request.uri == "/rooms/kitchen")
+        #expect(request.path == "/rooms/kitchen")
         #expect(request.protected == true)
         let body = try #require(request.body)
         let decoded = try JSONDecoder().decode(SampleBody.self, from: body)

@@ -1,4 +1,5 @@
 import Foundation
+import AnyCodable
 
 enum DeviceControlType: Identifiable, Equatable {
     case toggle(key: String, value: Bool)
@@ -8,6 +9,12 @@ enum DeviceControlType: Identifiable, Equatable {
     var key: String {
         switch self {
         case .toggle(let key, _): return key
+        }
+    }
+
+    var value: AnyCodable {
+        switch self {
+        case .toggle(_, let value): return AnyCodable(value)
         }
     }
 }

@@ -5,6 +5,7 @@ struct SmartHomeAppIOSApp: App {
     private let serverConfigStore: ServerConfigStore
     private let sessionStore: SessionStore
     private let serverConfigService: any ServerConfigService
+    private let deviceService: any DeviceService
 
     init() {
         let serverConfigStore = ServerConfigStore(persistence: UserDefaultsServerConfigPersistence())
@@ -20,6 +21,7 @@ struct SmartHomeAppIOSApp: App {
         self.serverConfigStore = serverConfigStore
         self.sessionStore = sessionStore
         self.serverConfigService = HubServerConfigService(client: apiClient)
+        self.deviceService = HubDeviceService(client: apiClient)
     }
 
     var body: some Scene {
@@ -28,6 +30,7 @@ struct SmartHomeAppIOSApp: App {
                 .environment(sessionStore)
                 .environment(serverConfigStore)
                 .environment(\.serverConfigService, serverConfigService)
+                .environment(\.deviceService, deviceService)
         }
     }
 }

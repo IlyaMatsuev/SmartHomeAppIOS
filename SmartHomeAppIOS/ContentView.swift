@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.deviceService) private var deviceService
+
     var body: some View {
         ZStack {
             Color("BackgroundPrimary")
@@ -12,7 +14,7 @@ struct ContentView: View {
 //                        Label("Home", systemImage: "house.fill")
 //                    }
 
-                DevicesView()
+                DevicesView(service: deviceService)
                     .tabItem {
                         Label("Devices", systemImage: "lightbulb.fill")
                     }

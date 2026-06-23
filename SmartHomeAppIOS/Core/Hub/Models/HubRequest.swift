@@ -9,25 +9,26 @@ struct HubRequest: Sendable {
     }
 
     let method: Method
-    let uri: String
+    let path: String
+    let query: [String: String]
     let body: Data?
     let protected: Bool
 }
 
 extension HubRequest {
-    static func get(_ uri: String, protected: Bool = true) -> Self {
-        .init(method: .get, uri: uri, body: nil, protected: protected)
+    static func get(_ path: String, _ query: [String: String] = [:], protected: Bool = true) -> Self {
+        .init(method: .get, path: path, query: query, body: nil, protected: protected)
     }
 
-    static func delete(_ uri: String, protected: Bool = true) -> Self {
-        .init(method: .delete, uri: uri, body: nil, protected: protected)
+    static func delete(_ path: String, _ query: [String: String] = [:], protected: Bool = true) -> Self {
+        .init(method: .delete, path: path, query: query, body: nil, protected: protected)
     }
 
-    static func post(_ uri: String, _ body: some Encodable, protected: Bool = true) throws -> Self {
-        .init(method: .post, uri: uri, body: try JSONEncoder().encode(body), protected: protected)
+    static func post(_ path: String, _ body: some Encodable, protected: Bool = true) throws -> Self {
+        .init(method: .post, path: path, query: [:], body: try JSONEncoder().encode(body), protected: protected)
     }
 
-    static func put(_ uri: String, _ body: some Encodable, protected: Bool = true) throws -> Self {
-        .init(method: .put, uri: uri, body: try JSONEncoder().encode(body), protected: protected)
+    static func put(_ path: String, _ body: some Encodable, protected: Bool = true) throws -> Self {
+        .init(method: .put, path: path, query: [:], body: try JSONEncoder().encode(body), protected: protected)
     }
 }

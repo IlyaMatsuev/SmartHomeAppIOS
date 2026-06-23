@@ -24,7 +24,7 @@ struct HubAuthServiceTests {
         #expect(client.sentRequests.count == 1)
         let request = try #require(client.sentRequests.first)
         #expect(request.method == .put)
-        #expect(request.uri == "/auth/login")
+        #expect(request.path == "/auth/login")
         #expect(request.protected == false)
     }
 
@@ -97,7 +97,7 @@ struct HubAuthServiceTests {
         #expect(client.sentRequests.count == 1)
         let request = try #require(client.sentRequests.first)
         #expect(request.method == .put)
-        #expect(request.uri == "/auth/login/refresh")
+        #expect(request.path == "/auth/login/refresh")
         #expect(request.protected == false)
     }
 

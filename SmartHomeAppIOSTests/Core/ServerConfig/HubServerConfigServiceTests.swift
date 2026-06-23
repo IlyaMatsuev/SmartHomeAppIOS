@@ -28,7 +28,7 @@ struct HubServerConfigServiceTests {
         #expect(client.sentRequests.count == 1)
         let request = try #require(client.sentRequests.first)
         #expect(request.method == .get)
-        #expect(request.uri == "/info")
+        #expect(request.path == "/info")
         #expect(request.protected == false)
         let target = try #require(client.sentTargets.first)
         #expect(target == Self.server)

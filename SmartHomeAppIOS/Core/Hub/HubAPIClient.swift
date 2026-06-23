@@ -44,7 +44,7 @@ final class HubAPIClient: MyHomeAPIClient, @unchecked Sendable {
     func send<T: Decodable & Sendable>(_ request: HubRequest, to server: Server) async throws -> T {
         let data = try await perform(request, server: server)
         do {
-            return try JSONDecoder().decode(T.self, from: data)
+            return try JSONDecoder.hubAPI.decode(T.self, from: data)
         } catch {
             throw HubAPIError.decoding(error.localizedDescription)
         }
@@ -99,9 +99,10 @@ final class HubAPIClient: MyHomeAPIClient, @unchecked Sendable {
     }
 
     private func createRequest(_ baseURL: URL, _ request: HubRequest) async -> URLRequest {
-        Self.logger.debug("Sending a request on \(request.method.rawValue) \"\(request.uri)\"")
+        Self.logger.debug("Sending a request on \(request.method.rawValue) \"\(request.path)\"")
 
-        var urlRequest = URLRequest(url: baseURL.appending(path: request.uri))
+        let url = buildURL(baseURL: baseURL, request: request)
+        var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = request.method.rawValue
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
 
@@ -115,6 +116,14 @@ final class HubAPIClient: MyHomeAPIClient, @unchecked Sendable {
             urlRequest.setValue("Bearer \(token.accessToken)", forHTTPHeaderField: "Authorization")
         }
         return urlRequest
+    }
+
+    private func buildURL(baseURL: URL, request: HubRequest) -> URL {
+        var components = URLComponents(url: baseURL.appending(path: request.path), resolvingAgainstBaseURL: false)!
+        if !request.query.isEmpty {
+            components.queryItems = request.query.map { URLQueryItem(name: $0.key, value: $0.value) }
+        }
+        return components.url!
     }
 
     private func handleResponse(_ data: Data, _ response: HTTPURLResponse) throws -> Data {

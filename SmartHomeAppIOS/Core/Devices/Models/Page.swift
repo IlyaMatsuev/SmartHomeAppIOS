@@ -1,4 +1,4 @@
-struct Page<Item: Codable & Hashable>: Codable, Hashable {
+struct Page<Item: Codable & Hashable & Sendable>: Codable, Hashable, Sendable {
     let items: [Item]
     let page: Int
     let pageSize: Int

@@ -1,7 +1,11 @@
 import SwiftUI
 
 struct DevicesView: View {
-    @State private var viewModel = DevicesViewModel(service: MockDeviceService())
+    @State private var viewModel: DevicesViewModel
+
+    init(service: any DeviceService) {
+        self._viewModel = State(initialValue: DevicesViewModel(service: service))
+    }
 
     var body: some View {
         NavigationStack {
@@ -55,7 +59,7 @@ struct DevicesView: View {
 #Preview {
     let server = Server(.http, "hub.local:8080", remote: false, label: "Home")
     let store = ServerConfigStore(persistence: InMemoryServerConfigPersistence(initial: [server]))
-    return DevicesView()
+    return DevicesView(service: MockDeviceService())
         .environment(store)
         .task { await store.load() }
 }

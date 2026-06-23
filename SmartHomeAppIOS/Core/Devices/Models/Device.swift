@@ -28,7 +28,6 @@ struct Device: Codable, Identifiable, Hashable {
 
     var controlsUpdatedAt: Date?
     let measurementsUpdatedAt: Date?
-
     let createdAt: Date
     let updatedAt: Date
 

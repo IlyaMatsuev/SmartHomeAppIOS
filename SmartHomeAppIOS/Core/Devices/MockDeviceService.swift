@@ -23,7 +23,7 @@ struct MockDeviceService: DeviceService {
                 controls: [
                     "on": false,
                     "brightness": 100,
-                    "color": "#B7D4FF",
+                    "color": "#B7D4FF"
                 ],
                 measurements: [:],
                 controlsUpdatedAt: now,
@@ -107,7 +107,7 @@ struct MockDeviceService: DeviceService {
                 controls: [:],
                 measurements: [
                     "battery": 100,
-                    "linkquality": 204,
+                    "linkquality": 204
                 ],
                 controlsUpdatedAt: nil,
                 measurementsUpdatedAt: now,
@@ -122,7 +122,10 @@ struct MockDeviceService: DeviceService {
     }
 
     func updateControl(deviceId: String, controlType: DeviceControlType) async throws -> Device {
-        guard var device = Self.allDevices.first(where: { $0.externalId == deviceId }) else { throw DeviceNotFoundError(deviceId: deviceId) }
+        guard var device = Self.allDevices.first(where: { $0.externalId == deviceId }) else {
+            throw DeviceNotFoundError(deviceId: deviceId)
+        }
+
         try await Task.sleep(for: operationDelay)
 
         var controls = device.controls ?? [:]
@@ -136,7 +139,6 @@ struct MockDeviceService: DeviceService {
         return device
     }
 
-    // swiftlint:disable:next function_body_length
     func fetchDevices() async throws -> Page<Device> {
         try await Task.sleep(for: operationDelay)
         return Page(
