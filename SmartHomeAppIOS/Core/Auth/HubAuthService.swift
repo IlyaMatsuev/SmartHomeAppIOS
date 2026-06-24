@@ -22,7 +22,6 @@ struct HubAuthService: AuthService {
         self.client = client
     }
 
-    // TODO: Handle errors: 400, 401, 500
     func login(email: String, password: String) async throws -> AuthToken {
         do {
             let body = LoginRequest(email: email, password: password)
@@ -33,14 +32,13 @@ struct HubAuthService: AuthService {
                 accessToken: response.accessToken,
                 refreshToken: response.refreshToken
             )
-        } catch HubAPIError.unauthorized {
+        } catch HubAPIError.unauthorized, HubAPIError.validation {
             throw AuthError.invalidLoginCredentials
         } catch {
             throw AuthError.unexpected
         }
     }
 
-    // TODO: Handle errors: 400, 401, 500
     func loginRefresh(refreshToken: String) async throws -> AuthToken {
         do {
             let body = RefreshRequest(refreshToken: refreshToken)
@@ -51,7 +49,7 @@ struct HubAuthService: AuthService {
                 accessToken: response.accessToken,
                 refreshToken: response.refreshToken
             )
-        } catch HubAPIError.unauthorized {
+        } catch HubAPIError.unauthorized, HubAPIError.validation {
             throw AuthError.sessionExpired
         } catch {
             throw AuthError.unexpected

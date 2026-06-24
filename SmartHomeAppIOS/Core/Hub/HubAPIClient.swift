@@ -65,7 +65,7 @@ final class HubAPIClient: MyHomeAPIClient, @unchecked Sendable {
         do {
             return try await performOnce(request, server: server)
         } catch HubAPIError.unauthorized where request.protected {
-            Self.logger.log("Received 401 on protected request — attempting refresh")
+            Self.logger.log("Received 401 on protected request - attempting refresh")
             if await refreshHandler() {
                 return try await performOnce(request, server: server)
             }
@@ -130,13 +130,30 @@ final class HubAPIClient: MyHomeAPIClient, @unchecked Sendable {
         let body = String(data: data, encoding: .utf8) ?? "<binary>"
         Self.logger.debug("Received a response (\(response.statusCode)) with a body: \(body)")
 
-        switch response.statusCode {
-        case 200..<300:
+        if response.statusCode >= 200 && response.statusCode < 300 {
             return data
+        }
+
+        switch response.statusCode {
+        case 400:
+            let errorResponse = try decodeValidationResponse(data)
+            throw HubAPIError.validation(errorResponse.firstError.path, errorResponse.firstError.message)
         case 401:
             throw HubAPIError.unauthorized
+        case 403:
+            throw HubAPIError.forbidden
+        case 404:
+            throw HubAPIError.notFound
         default:
-            throw HubAPIError.http(status: response.statusCode, body: String(data: data, encoding: .utf8))
+            throw HubAPIError.unexpected
+        }
+    }
+
+    private func decodeValidationResponse(_ data: Data, ) throws -> HubErrorResponse {
+        do {
+            return try JSONDecoder.hubAPI.decode(HubErrorResponse.self, from: data)
+        } catch {
+            throw HubAPIError.decoding(error.localizedDescription)
         }
     }
 }

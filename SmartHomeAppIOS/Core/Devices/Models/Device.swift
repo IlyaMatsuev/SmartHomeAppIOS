@@ -10,6 +10,7 @@ struct Device: Codable, Identifiable, Hashable {
     let room: DeviceRoom
 
     let transportProtocol: TransportProtocol
+    // swiftlint:disable:next identifier_name
     let ip: String?
     let updateInterval: Int?
 

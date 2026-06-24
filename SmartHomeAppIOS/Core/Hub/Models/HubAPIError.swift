@@ -5,7 +5,10 @@ enum HubAPIError: LocalizedError, Equatable {
     case transport
     case decoding(String)
     case unauthorized
-    case http(status: Int, body: String?)
+    case forbidden
+    case validation(String, String)
+    case notFound
+    case unexpected
 
     var errorDescription: String? {
         switch self {
@@ -17,8 +20,14 @@ enum HubAPIError: LocalizedError, Equatable {
             "Failed to decode the server response: \(message)"
         case .unauthorized:
             "The request was not authorized."
-        case .http(let status, let body):
-            "Server returned \(status)\(body.map { ": \($0)" } ?? "")"
+        case .forbidden:
+            "The request was forbidden"
+        case .validation(_, let message):
+            message
+        case .notFound:
+            "The requested resource was not found"
+        case .unexpected:
+            "Something went wrong"
         }
     }
 }

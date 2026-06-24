@@ -4,7 +4,14 @@ This file contains project-level instructions for Claude Code when working in th
 
 ## What this project is
 
-A native iOS client for the SmartHome Hub. Built with SwiftUI. The app is a personal project — single developer, no production users yet — so prefer simple, idiomatic SwiftUI over enterprise-style abstractions.
+A native iOS client for the SmartHome Hub. Built with SwiftUI. The app is currently maintained by a single developer, but it's intended to grow — design choices should be **idiomatic SwiftUI that scales** as features, screens, and contributors are added.
+
+Concretely:
+
+- **Prefer well-maintained libraries over custom reimplementations of common UI/infra patterns** (toasts, popups, charts, image loading, keychain wrappers, etc.) — added via SPM. Custom code is for project-specific logic, not generic infrastructure. Pick libraries with active maintenance, a real user base, and a small API surface; avoid bringing in a framework when a 50-line helper would do.
+- **Reach for native SwiftUI patterns first** (`@Observable`, `@Environment`, `NavigationStack`, `.task`, view modifiers). Don't invent a parallel system when SwiftUI already has one.
+- **Design for the next contributor**, not just today's feature. Centralize cross-cutting concerns (auth state, error presentation, navigation root) so screens don't each reinvent them, but don't pre-build abstraction layers for needs that don't exist yet.
+- **Don't over-engineer.** Skip enterprise patterns (DI containers, repository-over-service-over-data-source stacks, custom reactive frameworks). Idiomatic SwiftUI is the bar; scalability comes from clean boundaries, not from layers.
 
 ## Toolchain & targets
 
@@ -141,9 +148,14 @@ Slash commands live in `.claude/commands/`:
 
 - `/tests` — write or adjust unit tests for recent code changes
 
+## Dependencies
+
+- **SPM only** — no CocoaPods or Carthage. Pin versions via `Package.resolved`.
+- **Prefer existing libraries for common patterns** (toasts, popups, charts, image loading, keychain, etc.) over rolling your own. Choose libraries that are actively maintained, have a real user base, and have a small API surface.
+- Reserve hand-rolled code for project-specific logic (services, models, screens, business rules). Don't reimplement generic UI infrastructure that a maintained package already solves well.
+
 ## Things to avoid
 
-- Don't introduce CocoaPods or Carthage. SPM only.
 - Don't add comments that restate the code (`// Increment counter` above `counter += 1`).
 - Don't create planning / decision docs unless explicitly asked.
 - Don't add files to the Xcode project that should not be compiled (`README.md`, `.gitignore`, `.swiftlint.yaml`, `LICENSE`). Either leave them out of the project entirely or add them with **all target memberships unchecked**.
