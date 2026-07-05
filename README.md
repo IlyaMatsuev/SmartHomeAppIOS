@@ -77,22 +77,51 @@ swiftlint
 swiftlint --fix
 ```
 
-## SideStore anisette servers
+## SideStore
 
-The app is installed on-device via [SideStore](https://sidestore.io). SideStore needs an anisette server to talk to Apple, and it lets you point it at a custom **anisette servers list** URL (Settings → Anisette Servers).
+The app is sideloaded via [SideStore](https://sidestore.io). Free Apple ID; SideStore re-signs on-device.
 
-This repo ships that list as [sidestore-anisette-servers.json](sidestore-anisette-servers.json). Entry 1 is the self-hosted server from [docker-compose.yaml](docker-compose.yaml); the rest are community fallbacks in case the local one is unreachable.
+### Anisette servers list
 
-### Hosting the list
+[sidestore-anisette-servers.json](sidestore-anisette-servers.json) - entry 1 is the self-hosted server from [docker-compose.yaml](docker-compose.yaml), rest are community fallbacks.
 
-SideStore fetches the list over HTTPS on every refresh, so it needs a stable raw URL. This repo uses a **secret GitHub gist** — unlisted, not indexed, but publicly reachable to anyone with the link, which is fine because SideStore itself needs to fetch it unauthenticated.
+Host it as a **secret gist** on <https://gist.github.com> with filename `sidestore-anisette-servers.json`. Copy the **Raw** URL and paste it in SideStore → Settings → **Anisette Servers**.
 
-One-time setup:
+To update: edit both the file in this repo and the gist (keep the same filename so the raw URL is stable), then refresh in SideStore.
 
-1. Go to <https://gist.github.com> → **New secret gist**.
-2. Filename: `sidestore-anisette-servers.json`. Paste the contents of the file in this repo.
-3. Create the gist. Open the **Raw** button and copy that URL.
-4. In SideStore → Settings → paste the raw URL into **Refresh anisette servers URL** and refresh.
+### GitHub setup
+
+Releases are published as GitHub Releases via a manual workflow. SideStore subscribes to [docs/apps.json](docs/apps.json) served by GitHub Pages and pulls new versions.
+
+1. Repo Settings → **Pages** → source = branch `main`, folder `/docs`.
+2. Repo Settings → **Actions → General** → *Workflow permissions* = **Read and write**.
+
+### iPhone setup & app installation
+
+1. Install SideStore per <https://sidestore.io/#get-started>.
+2. SideStore → **Settings** → **Account** → sign in with an [app-specific password](https://support.apple.com/en-us/HT204397). Not your real Apple ID password.
+3. Paste the anisette gist raw URL into Settings → **Anisette Servers** and pick the local server as default.
+4. SideStore → **Sources** → **+** → `https://ilyamatsuev.github.io/SmartHomeAppIOS/apps.json`.
+5. Open the source → **MyHome** → **Free Download**.
+
+### Publishing a app new version
+
+Publishing a new version:
+
+1. GitHub → **Actions** → **Release IPA** → **Run workflow**. Enter a version like `1.2.0` and optional notes.
+2. On the phone: SideStore → **My Apps** → pull to refresh. Tap **Update**.
+
+Workflow: [.github/workflows/release.yaml](.github/workflows/release.yaml). Manual only (`workflow_dispatch`).
+
+### App Auto-refresh
+
+Free-signed apps expire every 7 days. To re-sign in the background:
+
+1. iOS **Settings → General → Background App Refresh** — global toggle on, SideStore enabled.
+2. SideStore → Settings → **Background Refresh** — enabled, daily interval.
+3. Keep SideStore's WireGuard VPN profile enabled — the on-device signing loopback needs it.
+
+Manual refresh: SideStore → **My Apps** → pull to refresh.
 
 ## License
 

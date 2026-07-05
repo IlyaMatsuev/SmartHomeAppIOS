@@ -1,0 +1,117 @@
+name: Release IPA
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Marketing version (e.g. 1.2.0). Also used as the git tag: v<version>.'
+        required: true
+      release_notes:
+        description: 'Release notes shown in SideStore and the GitHub release body.'
+        required: false
+        default: ''
+      prerelease:
+        description: 'Mark the GitHub release as a prerelease.'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-ipa
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Resolve SPM dependencies
+        run: xcodebuild -resolvePackageDependencies -scheme SmartHomeAppIOS
+
+      - name: Build archive (unsigned)
+        run: |
+          set -euo pipefail
+          xcodebuild archive \
+            -scheme SmartHomeAppIOS \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/SmartHomeAppIOS.xcarchive \
+            MARKETING_VERSION="${{ inputs.version }}" \
+            CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" | xcbeautify --renderer github-actions
+        # xcbeautify is preinstalled on macos-15 runners; if it disappears, drop the pipe.
+
+      - name: Package IPA
+        id: pkg
+        run: |
+          set -euo pipefail
+          rm -rf Payload SmartHomeAppIOS.ipa
+          mkdir Payload
+          cp -R build/SmartHomeAppIOS.xcarchive/Products/Applications/SmartHomeAppIOS.app Payload/
+          zip -qr SmartHomeAppIOS.ipa Payload
+          SIZE=$(stat -f%z SmartHomeAppIOS.ipa)
+          echo "size=$SIZE" >> "$GITHUB_OUTPUT"
+          ls -lh SmartHomeAppIOS.ipa
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: v${{ inputs.version }}
+          name: v${{ inputs.version }}
+          body: ${{ inputs.release_notes }}
+          prerelease: ${{ inputs.prerelease == 'true' }}
+          files: SmartHomeAppIOS.ipa
+          fail_on_unmatched_files: true
+
+      - name: Prepend new version to docs/apps.json
+        env:
+          VERSION: ${{ inputs.version }}
+          NOTES: ${{ inputs.release_notes }}
+          SIZE: ${{ steps.pkg.outputs.size }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          DOWNLOAD_URL="https://github.com/${REPO}/releases/download/v${VERSION}/SmartHomeAppIOS.ipa"
+          jq --arg version "$VERSION" \
+             --arg date "$DATE" \
+             --arg url "$DOWNLOAD_URL" \
+             --arg notes "$NOTES" \
+             --argjson size "$SIZE" \
+             '.apps[0].versions |= ([{
+                version: $version,
+                date: $date,
+                localizedDescription: $notes,
+                downloadURL: $url,
+                size: $size,
+                minOSVersion: "18.6"
+             }] + .)' docs/apps.json > docs/apps.json.tmp
+          mv docs/apps.json.tmp docs/apps.json
+
+      - name: Commit apps.json bump
+        run: |
+          set -euo pipefail
+          git config user.name  "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          git add docs/apps.json
+          if git diff --cached --quiet; then
+            echo "apps.json unchanged, skipping commit"
+          else
+            git commit -m "Publish v${{ inputs.version }}"
+            git push
+          fi

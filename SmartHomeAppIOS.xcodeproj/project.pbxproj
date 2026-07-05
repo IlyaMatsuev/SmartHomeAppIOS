@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		90638AE82FCA28BE00FD7F19 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 90638AE72FCA28BE00FD7F19 /* .gitignore */; };
 		90638B3A2FCA520B00FD7F19 /* AnyCodable in Frameworks */ = {isa = PBXBuildFile; productRef = 90638B392FCA520B00FD7F19 /* AnyCodable */; };
 		90AA85262FEC83C800FD577C /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 90AA85252FEC83C800FD577C /* PopupView */; };
 /* End PBXBuildFile section */
@@ -33,7 +32,6 @@
 		90380FD22FC7942C000FCB28 /* SmartHomeAppIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SmartHomeAppIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		90380FDF2FC7942E000FCB28 /* SmartHomeAppIOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SmartHomeAppIOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		90380FE92FC7942E000FCB28 /* SmartHomeAppIOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SmartHomeAppIOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		90638AE72FCA28BE00FD7F19 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		90638AE92FCA2BF600FD7F19 /* .claudeignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .claudeignore; sourceTree = "<group>"; };
 		90638B032FCA2E6800FD7F19 /* .swiftlint.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yaml; sourceTree = "<group>"; };
 		90638B042FCA2E6800FD7F19 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
@@ -104,7 +102,6 @@
 				90380FD32FC7942C000FCB28 /* Products */,
 				90D63E922FDA0D2F0090797B /* AllTests.xctestplan */,
 				90D63E932FDA0D2F0090797B /* UnitTests.xctestplan */,
-				90638AE72FCA28BE00FD7F19 /* .gitignore */,
 				90638B032FCA2E6800FD7F19 /* .swiftlint.yaml */,
 				90638AE92FCA2BF600FD7F19 /* .claudeignore */,
 				90FC3DCA2FFAA94F00A13677 /* docker-compose.yaml */,
@@ -252,7 +249,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				90638AE82FCA28BE00FD7F19 /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
