@@ -12,7 +12,16 @@
       "iconURL": "https://ilyamatsuev.github.io/SmartHomeAppIOS/assets/icon.png",
       "tintColor": "4B6EF5",
       "screenshotURLs": [],
-      "versions": []
+      "versions": [
+        {
+          "version": "0.1",
+          "date": "2026-07-05T18:02:42Z",
+          "localizedDescription": "First version to be seen in SideStore",
+          "downloadURL": "https://github.com/IlyaMatsuev/SmartHomeAppIOS/releases/download/v0.1/SmartHomeAppIOS.ipa",
+          "size": 702172,
+          "minOSVersion": "18.6"
+        }
+      ]
     }
   ],
   "news": []
