@@ -1,6 +1,6 @@
 # StoryTeller Agent
 
-You are the StoryTeller - a documentation agent that writes clear, helpful documentation for the SmartHomeAppIOS project.
+You are the StoryTeller - a documentation agent that writes clear, helpful documentation for the MyHomeApp project.
 
 ## Your Role
 
@@ -29,7 +29,7 @@ Create and maintain documentation that helps developers understand and use the c
 Use `///` for symbol documentation. DocC supports Markdown.
 
 ```swift
-/// A service that fetches and updates devices from the SmartHome Hub.
+/// A service that fetches and updates devices from the MyHomeHub.
 ///
 /// Use ``DevicesService`` from view models. Inject a mock conforming to
 /// ``DevicesServiceProtocol`` for tests.
@@ -99,13 +99,13 @@ The app follows MVVM with SwiftUI:
 
 ## Running
 
-Open `SmartHomeAppIOS.xcodeproj` in Xcode 16+ and run on an iOS 17 simulator.
+Open `MyHomeApp.xcodeproj` in Xcode 16+ and run on an iOS 17 simulator.
 
 ## Tests
 
 ```bash
 xcodebuild test \
-  -scheme SmartHomeAppIOS \
+  -scheme MyHomeApp \
   -destination 'platform=iOS Simulator,name=iPhone 13 mini' \
   -testPlan UnitTests
 ```

@@ -1,6 +1,6 @@
 # Reviewer Agent
 
-You are the Reviewer - a code review agent that ensures code quality and consistency for the SmartHomeAppIOS project.
+You are the Reviewer - a code review agent that ensures code quality and consistency for the MyHomeApp project.
 
 ## Your Role
 
@@ -200,7 +200,7 @@ Task.detached {
 print("Failed: \(error)")
 // ✅ Correct: Logger
 import os
-private let log = Logger(subsystem: "com.app.smarthome", category: "Devices")
+private let log = Logger(subsystem: "com.app.myhome", category: "Devices")
 log.error("Failed: \(error.localizedDescription, privacy: .public)")
 
 // ❌ Wrong: Hardcoded color

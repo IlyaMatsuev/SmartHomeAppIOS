@@ -45,15 +45,15 @@ jobs:
         # only needs to exist so pbxproj's baseConfigurationReference resolves.
 
       - name: Resolve SPM dependencies
-        run: xcodebuild -resolvePackageDependencies -scheme SmartHomeAppIOS
+        run: xcodebuild -resolvePackageDependencies -scheme MyHomeApp
 
       - name: Build archive (unsigned)
         run: |
           set -euo pipefail
           xcodebuild archive \
-            -scheme SmartHomeAppIOS \
+            -scheme MyHomeApp \
             -destination 'generic/platform=iOS' \
-            -archivePath build/SmartHomeAppIOS.xcarchive \
+            -archivePath build/MyHomeApp.xcarchive \
             -skipPackagePluginValidation \
             -skipMacroValidation \
             MARKETING_VERSION="${{ inputs.version }}" \
@@ -68,13 +68,13 @@ jobs:
         id: pkg
         run: |
           set -euo pipefail
-          rm -rf Payload SmartHomeAppIOS.ipa
+          rm -rf Payload MyHomeApp.ipa
           mkdir Payload
-          cp -R build/SmartHomeAppIOS.xcarchive/Products/Applications/SmartHomeAppIOS.app Payload/
-          zip -qr SmartHomeAppIOS.ipa Payload
-          SIZE=$(stat -f%z SmartHomeAppIOS.ipa)
+          cp -R build/MyHomeApp.xcarchive/Products/Applications/MyHomeApp.app Payload/
+          zip -qr MyHomeApp.ipa Payload
+          SIZE=$(stat -f%z MyHomeApp.ipa)
           echo "size=$SIZE" >> "$GITHUB_OUTPUT"
-          ls -lh SmartHomeAppIOS.ipa
+          ls -lh MyHomeApp.ipa
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v3
@@ -83,7 +83,7 @@ jobs:
           name: v${{ inputs.version }}
           body: ${{ inputs.release_notes }}
           prerelease: ${{ inputs.prerelease == 'true' }}
-          files: SmartHomeAppIOS.ipa
+          files: MyHomeApp.ipa
           fail_on_unmatched_files: true
 
       - name: Prepend new version to docs/apps.json
@@ -95,7 +95,7 @@ jobs:
         run: |
           set -euo pipefail
           DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          DOWNLOAD_URL="https://github.com/${REPO}/releases/download/v${VERSION}/SmartHomeAppIOS.ipa"
+          DOWNLOAD_URL="https://github.com/${REPO}/releases/download/v${VERSION}/MyHomeApp.ipa"
           jq --arg version "$VERSION" \
              --arg date "$DATE" \
              --arg url "$DOWNLOAD_URL" \

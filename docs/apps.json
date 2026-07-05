@@ -1,15 +1,15 @@
 {
   "name": "My Home",
-  "identifier": "com.ilyamatsuev.SmartHomeAppIOSSource",
-  "sourceURL": "https://ilyamatsuev.github.io/SmartHomeAppIOS/apps.json",
+  "identifier": "com.ilyamatsuev.MyHomeAppSource",
+  "sourceURL": "https://ilyamatsuev.github.io/MyHomeApp/apps.json",
   "apps": [
     {
       "name": "My Home",
-      "bundleIdentifier": "com.ilyamatsuev.SmartHomeAppIOS",
+      "bundleIdentifier": "com.ilyamatsuev.MyHomeApp",
       "developerName": "Ilya Matsuev",
       "subtitle": "iOS client for the MyHome ecosystem",
-      "localizedDescription": "iOS client for the MySmartHome hub. Built with SwiftUI.",
-      "iconURL": "https://ilyamatsuev.github.io/SmartHomeAppIOS/assets/icon.png",
+      "localizedDescription": "iOS client for the MyHomeHub. Built with SwiftUI.",
+      "iconURL": "https://ilyamatsuev.github.io/MyHomeApp/assets/icon.png",
       "tintColor": "4B6EF5",
       "screenshotURLs": [],
       "versions": [
@@ -17,7 +17,7 @@
           "version": "0.1",
           "date": "2026-07-05T18:02:42Z",
           "localizedDescription": "First version to be seen in SideStore",
-          "downloadURL": "https://github.com/IlyaMatsuev/SmartHomeAppIOS/releases/download/v0.1/SmartHomeAppIOS.ipa",
+          "downloadURL": "https://github.com/IlyaMatsuev/MyHomeApp/releases/download/v0.1/MyHomeApp.ipa",
           "size": 702172,
           "minOSVersion": "18.6"
         }

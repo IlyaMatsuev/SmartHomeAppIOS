@@ -1,8 +1,8 @@
-# SmartHome App (IOS)
+# My Home App (iOS)
 
-iOS client for the [MySmartHome](https://github.com/IlyaMatsuev/MySmartHome) hub. Built with SwiftUI.
+iOS client for the [My Home Hub](https://github.com/IlyaMatsuev/MyHomeHub). Built with SwiftUI.
 
-**Download page:** <https://ilyamatsuev.github.io/SmartHomeAppIOS/>
+**Download page:** <https://ilyamatsuev.github.io/MyHomeApp/>
 
 ![My Home Banner](./docs/assets/banner.png)
 
@@ -15,7 +15,7 @@ iOS client for the [MySmartHome](https://github.com/IlyaMatsuev/MySmartHome) hub
 
 ## Setup
 
-1. Clone the repo and open `SmartHomeAppIOS.xcodeproj` in Xcode.
+1. Clone the repo and open `MyHomeApp.xcodeproj` in Xcode.
 2. Copy [Local.xcconfig.example](Local.xcconfig.example) to `Local.xcconfig` and set your values:
 
 ```bash
@@ -40,7 +40,7 @@ From the command line:
 
 ```bash
 # Build
-xcodebuild build -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 13 mini'
+xcodebuild build -scheme MyHomeApp -destination 'platform=iOS Simulator,name=iPhone 13 mini'
 
 # Discover available simulators
 xcrun simctl list devices available
@@ -58,22 +58,22 @@ From the command line:
 
 ```bash
 # Unit tests (fast — no UI tests)
-xcodebuild test -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 13 mini' -testPlan UnitTests
+xcodebuild test -scheme MyHomeApp -destination 'platform=iOS Simulator,name=iPhone 13 mini' -testPlan UnitTests
 
 # Everything, including UI tests
-xcodebuild test -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 13 mini' -testPlan AllTests
+xcodebuild test -scheme MyHomeApp -destination 'platform=iOS Simulator,name=iPhone 13 mini' -testPlan AllTests
 
 # A single test method
 xcodebuild test \
-  -scheme SmartHomeAppIOS \
+  -scheme MyHomeApp \
   -destination 'platform=iOS Simulator,name=iPhone 13 mini' \
   -testPlan UnitTests \
-  -only-testing:SmartHomeAppIOSTests/DevicesViewModelTests/loadGroupsDevicesByRoom
+  -only-testing:MyHomeAppTests/DevicesViewModelTests/loadGroupsDevicesByRoom
 ```
 
-Unit tests live in `SmartHomeAppIOSTests/` and use [Swift Testing](https://developer.apple.com/documentation/testing) (`@Test`, `#expect`).
+Unit tests live in `MyHomeAppTests/` and use [Swift Testing](https://developer.apple.com/documentation/testing) (`@Test`, `#expect`).
 
-UI tests live in `SmartHomeAppIOSUITests/` and use XCTest / XCUITest.
+UI tests live in `MyHomeAppUITests/` and use XCTest / XCUITest.
 
 ## Linting
 
@@ -111,7 +111,7 @@ Releases are published as GitHub Releases via a manual workflow. SideStore subsc
 1. Install SideStore per <https://sidestore.io/#get-started>.
 2. SideStore → **Settings** → **Account** → sign in with an [app-specific password](https://support.apple.com/en-us/HT204397). Not your real Apple ID password.
 3. Paste the anisette gist raw URL into Settings → **Anisette Servers** and pick the local server as default.
-4. SideStore → **Sources** → **+** → `https://ilyamatsuev.github.io/SmartHomeAppIOS/apps.json`.
+4. SideStore → **Sources** → **+** → `https://ilyamatsuev.github.io/MyHomeApp/apps.json`.
 5. Open the source → **MyHome** → **Free Download**.
 
 ### Publishing a app new version

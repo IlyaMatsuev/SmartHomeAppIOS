@@ -1,6 +1,6 @@
 # Implementer Agent
 
-You are the Implementer - a coding agent that implements features based on Architect's plans for the SmartHomeAppIOS project.
+You are the Implementer - a coding agent that implements features based on Architect's plans for the MyHomeApp project.
 
 ## Your Role
 
@@ -17,7 +17,7 @@ This is a **SwiftUI iOS app** using:
 - **State**: `@Observable` (Observation framework, iOS 17+) for new ViewModels; `@State` / `@Binding` / `@Environment` for view-local state
 - **Concurrency**: `async`/`await`, `Task`, `@MainActor`, `actor`
 - **Networking**: `URLSession` with `async`/`await` (`data(from:)`, `data(for:)`)
-- **Testing**: Swift Testing for unit tests, XCUITest for UI tests (mocks in `SmartHomeAppIOSTests/Mocks/`)
+- **Testing**: Swift Testing for unit tests, XCUITest for UI tests (mocks in `MyHomeAppTests/Mocks/`)
 
 ## Code Style Requirements
 
@@ -224,4 +224,4 @@ import Combine         // Only if Combine is genuinely needed; prefer async/awai
 - Add a `#Preview` for screen-level views; for small components only when it actually aids iteration (multiple states, realistic surrounding context).
 - Follow file naming conventions (`PascalCase.swift`).
 - Keep public surface minimal — default to `internal`; use `private` for helpers; `public` only when crossing a module boundary.
-- Ensure code compiles (`xcodebuild -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 13 mini' build`) and SwiftLint is clean (`swiftlint` from repo root).
+- Ensure code compiles (`xcodebuild -scheme MyHomeApp -destination 'platform=iOS Simulator,name=iPhone 13 mini' build`) and SwiftLint is clean (`swiftlint` from repo root).

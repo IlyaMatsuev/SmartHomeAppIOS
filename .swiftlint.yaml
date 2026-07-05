@@ -1,4 +1,4 @@
-# SwiftLint configuration for SmartHomeAppIOS.
+# SwiftLint configuration for MyHomeApp.
 # Run with `swiftlint` from the repo root. Install via `brew install swiftlint`.
 #
 # Philosophy: turn on every opt-in rule that enforces the official Swift API
@@ -8,9 +8,9 @@
 # frameworks this project doesn't use (Nimble, Quick, Interface Builder).
 
 included:
-  - SmartHomeAppIOS
-  - SmartHomeAppIOSTests
-  - SmartHomeAppIOSUITests
+  - MyHomeApp
+  - MyHomeAppTests
+  - MyHomeAppUITests
 
 excluded:
   - build

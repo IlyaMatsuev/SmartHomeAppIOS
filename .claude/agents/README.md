@@ -1,6 +1,6 @@
-# SmartHomeAppIOS Development Agents
+# MyHomeApp Development Agents
 
-This directory contains prompt configurations for AI agents that assist with development tasks for the SmartHome iOS app.
+This directory contains prompt configurations for AI agents that assist with development tasks for the My Home iOS app.
 
 ## Agents Overview
 

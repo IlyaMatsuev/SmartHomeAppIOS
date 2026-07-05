@@ -1,10 +1,10 @@
-# SmartHomeAppIOS — Claude Instructions
+# MyHomeApp — Claude Instructions
 
 This file contains project-level instructions for Claude Code when working in this repo. Skim it before making changes.
 
 ## What this project is
 
-A native iOS client for the SmartHome Hub. Built with SwiftUI. The app is currently maintained by a single developer, but it's intended to grow — design choices should be **idiomatic SwiftUI that scales** as features, screens, and contributors are added.
+A native iOS client for the MyHomeHub. Built with SwiftUI. The app is currently maintained by a single developer, but it's intended to grow — design choices should be **idiomatic SwiftUI that scales** as features, screens, and contributors are added.
 
 Concretely:
 
@@ -30,8 +30,8 @@ Use iOS 17+ / iOS 18 APIs freely (e.g. Observation framework `@Observable`, `Nav
 ## Project structure
 
 ```
-SmartHomeAppIOS/
-├── SmartHomeAppIOSApp.swift         # @main entry point
+MyHomeApp/
+├── MyHomeApp.swift         # @main entry point
 ├── ContentView.swift                # Root TabView
 ├── Assets.xcassets/                 # Colors, images, app icon
 ├── Core/                            # Models, networking, services (shared infra)
@@ -42,11 +42,11 @@ SmartHomeAppIOS/
     ├── Scenarios/
     └── Settings/
 
-SmartHomeAppIOSTests/                # Swift Testing unit tests
+MyHomeAppTests/                # Swift Testing unit tests
 ├── Mocks/                           # Hand-rolled protocol mocks + fixtures
 └── ...                              # Mirrors Screens/Core layout
 
-SmartHomeAppIOSUITests/              # XCUITest UI tests (XCTest — Swift Testing
+MyHomeAppUITests/              # XCUITest UI tests (XCTest — Swift Testing
                                      #   doesn't yet cover XCUIApplication,
                                      #   measure, or XCTAttachment)
 ```
@@ -66,7 +66,7 @@ The full conventions are in [.claude/agents/implementer.md](.claude/agents/imple
 
 ## Build & test
 
-The scheme is **SmartHomeAppIOS**. Use an iPhone simulator on iOS 18.x.
+The scheme is **MyHomeApp**. Use an iPhone simulator on iOS 18.x.
 
 The scheme ships two test plans:
 
@@ -76,18 +76,18 @@ The scheme ships two test plans:
 ```bash
 # Build
 xcodebuild build \
-  -scheme SmartHomeAppIOS \
+  -scheme MyHomeApp \
   -destination 'platform=iOS Simulator,name=iPhone 13 mini'
 
 # Run unit tests (fast — no UI tests, no coverage)
 xcodebuild test \
-  -scheme SmartHomeAppIOS \
+  -scheme MyHomeApp \
   -destination 'platform=iOS Simulator,name=iPhone 13 mini' \
   -testPlan UnitTests
 
 # Run everything incl. UI tests (slow — only when explicitly asked)
 xcodebuild test \
-  -scheme SmartHomeAppIOS \
+  -scheme MyHomeApp \
   -destination 'platform=iOS Simulator,name=iPhone 13 mini' \
   -testPlan AllTests
 
@@ -99,10 +99,10 @@ Discover available simulators with `xcrun simctl list devices available`.
 
 **Before reporting a task done that touched Swift code, you MUST run both of these and report the result:**
 
-1. `xcodebuild build -scheme SmartHomeAppIOS -destination 'platform=iOS Simulator,name=iPhone 13 mini'` — project must build
+1. `xcodebuild build -scheme MyHomeApp -destination 'platform=iOS Simulator,name=iPhone 13 mini'` — project must build
 2. `swiftlint` from the repo root — must have no new errors; address any new warnings your changes introduced
 
-Don't run tests after every change. Run the **UnitTests** plan when the user explicitly asks, or when you've edited files under `SmartHomeAppIOSTests/` and need to verify the tests you touched. Always scope to `-testPlan UnitTests` — never run the UI tests (`AllTests`) unless the user explicitly asks for them.
+Don't run tests after every change. Run the **UnitTests** plan when the user explicitly asks, or when you've edited files under `MyHomeAppTests/` and need to verify the tests you touched. Always scope to `-testPlan UnitTests` — never run the UI tests (`AllTests`) unless the user explicitly asks for them.
 
 If `iPhone 13 mini` isn't available, check `xcrun simctl list devices available` and pick another iOS 18.x or 26.x simulator. If you cannot run a step (sandbox / tool missing), say so explicitly — do not claim success.
 
@@ -128,7 +128,7 @@ If `iPhone 13 mini` isn't available, check `xcrun simctl list devices available`
 - Test method names are `camelCase` with **no `test` prefix** (e.g. `loadGroupsDevicesByRoom`). The `@Test` attribute is what marks them as tests.
 - Group related tests with `// MARK: -` dividers (e.g. `// MARK: - load() — grouping`). They show up in Xcode's jump bar and minimap.
 - Use `#expect(a == b)` for assertions, `#expect(a == b, "message")` to attach context, and `try #require(...)` for **preconditions** the rest of the test depends on — unwrap optionals through `#require`, never through `?` chains or `?? default` inside an `#expect`. `#expect(optional?.x == y)` fails with a confusing boolean message when the optional is `nil`; `#expect(optional ?? sentinel == y)` can pass *vacuously* when `sentinel` happens to equal `y`. Both are silent ways for a broken test to feel fine.
-- Use the fluent `Device.fixture()` builder for test devices, not raw `Device(...)` initializers. The builder lives in `SmartHomeAppIOSTests/Mocks/Device+Fixture.swift` and exposes semantic methods (`newDevice(...)`, `inRoom(_:)`, `asTuya(...)`, `asZigbee(...)`, `withControls(...)`, etc.).
+- Use the fluent `Device.fixture()` builder for test devices, not raw `Device(...)` initializers. The builder lives in `MyHomeAppTests/Mocks/Device+Fixture.swift` and exposes semantic methods (`newDevice(...)`, `inRoom(_:)`, `asTuya(...)`, `asZigbee(...)`, `withControls(...)`, etc.).
 - Mock service classes conforming to a `Sendable` protocol use `final class … : Protocol, @unchecked Sendable`. Tests serialize their own access.
 - Test suites that touch a `@MainActor` ViewModel are themselves `@MainActor` (annotate the `struct`). The ViewModel reference can stay `let` even when the test mutates its properties — it's a reference type.
 

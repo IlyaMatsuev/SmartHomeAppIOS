@@ -11,24 +11,24 @@
   "defaultOptions" : {
     "codeCoverage" : true,
     "targetForVariableExpansion" : {
-      "containerPath" : "container:SmartHomeAppIOS.xcodeproj",
+      "containerPath" : "container:MyHomeApp.xcodeproj",
       "identifier" : "90380FD12FC7942C000FCB28",
-      "name" : "SmartHomeAppIOS"
+      "name" : "MyHomeApp"
     }
   },
   "testTargets" : [
     {
       "target" : {
-        "containerPath" : "container:SmartHomeAppIOS.xcodeproj",
+        "containerPath" : "container:MyHomeApp.xcodeproj",
         "identifier" : "90380FDE2FC7942E000FCB28",
-        "name" : "SmartHomeAppIOSTests"
+        "name" : "MyHomeAppTests"
       }
     },
     {
       "target" : {
-        "containerPath" : "container:SmartHomeAppIOS.xcodeproj",
+        "containerPath" : "container:MyHomeApp.xcodeproj",
         "identifier" : "90380FE82FC7942E000FCB28",
-        "name" : "SmartHomeAppIOSUITests"
+        "name" : "MyHomeAppUITests"
       }
     }
   ],

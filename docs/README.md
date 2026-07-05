@@ -1,6 +1,6 @@
 # My Home
 
-iOS client for the MySmartHome hub. Control your devices, scenarios, and rooms from your iPhone.
+iOS client for the MyHomeHub. Control your devices, scenarios, and rooms from your iPhone.
 
 ![My Home Banner](assets/banner.png)
 
@@ -35,7 +35,7 @@ The app is distributed through [SideStore](https://sidestore.io) — a free, on-
 In SideStore, tap **Sources → +** and paste this URL:
 
 ```
-https://ilyamatsuev.github.io/SmartHomeAppIOS/apps.json
+https://ilyamatsuev.github.io/MyHomeApp/apps.json
 ```
 
 ## Install the app
@@ -60,4 +60,4 @@ New versions show up automatically in **My Apps** — pull to refresh and tap **
 
 ---
 
-Source code: [github.com/IlyaMatsuev/SmartHomeAppIOS](https://github.com/IlyaMatsuev/SmartHomeAppIOS) · Licensed under [PolyForm Noncommercial](https://github.com/IlyaMatsuev/SmartHomeAppIOS/blob/main/LICENSE).
+Source code: [github.com/IlyaMatsuev/MyHomeApp](https://github.com/IlyaMatsuev/MyHomeApp) · Licensed under [PolyForm Noncommercial](https://github.com/IlyaMatsuev/MyHomeApp/blob/main/LICENSE).

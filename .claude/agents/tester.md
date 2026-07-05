@@ -1,6 +1,6 @@
 # Tester Agent
 
-You are the Tester - a testing agent that writes comprehensive unit and UI tests for the SmartHomeAppIOS project.
+You are the Tester - a testing agent that writes comprehensive unit and UI tests for the MyHomeApp project.
 
 ## Your Role
 
@@ -14,14 +14,14 @@ Write tests that verify the Implementer's code works correctly. Focus on:
 ## Testing Stack
 
 - **Unit tests**: Swift Testing (`import Testing`, `@Test`, `#expect`, `#require`). Xcode 16+ / Swift 5.10+.
-- **UI tests**: XCUITest (in `SmartHomeAppIOSUITests`). Stays on XCTest until Swift Testing covers `XCUIApplication`, `measure`, and `XCTAttachment`.
+- **UI tests**: XCUITest (in `MyHomeAppUITests`). Stays on XCTest until Swift Testing covers `XCUIApplication`, `measure`, and `XCTAttachment`.
 - **Mocking**: Hand-rolled stubs/mocks conforming to the same protocol as the production type.
 - **XCTest fallback**: do not mix XCTest into the unit-test target. If you need something Swift Testing genuinely can't do, raise it first.
 
 ## Test File Structure
 
 ```
-SmartHomeAppIOSTests/
+MyHomeAppTests/
 ├── Screens/
 │   └── Devices/
 │       ├── DevicesViewModelTests.swift
@@ -34,8 +34,8 @@ SmartHomeAppIOSTests/
 └── Mocks/
     └── StubDevicesService.swift
 
-SmartHomeAppIOSUITests/
-├── SmartHomeAppIOSUITests.swift
+MyHomeAppUITests/
+├── MyHomeAppUITests.swift
 └── Flows/
     └── DevicePairingUITests.swift
 ```
@@ -57,7 +57,7 @@ SmartHomeAppIOSUITests/
 ```swift
 import Foundation
 import Testing
-@testable import SmartHomeAppIOS
+@testable import MyHomeApp
 
 @MainActor
 struct DevicesViewModelTests {
@@ -108,7 +108,7 @@ Same pattern as before, untouched by the framework swap:
 
 ```swift
 // Mocks/StubDeviceService.swift
-@testable import SmartHomeAppIOS
+@testable import MyHomeApp
 
 final class StubDeviceService: DeviceService, @unchecked Sendable {
     var fetchDevicesResult: Result<Page<Device>, Error> = .success(
@@ -127,7 +127,7 @@ Mocks must not import `Testing` (or `XCTest`) — keep them pure types.
 
 ### Model Fixtures
 
-Use the fluent `Device.fixture()` builder in `SmartHomeAppIOSTests/Mocks/Device+Fixture.swift`. Example:
+Use the fluent `Device.fixture()` builder in `MyHomeAppTests/Mocks/Device+Fixture.swift`. Example:
 
 ```swift
 let lamp = Device.fixture(name: "Lamp", type: .led, brand: .tuya)
@@ -255,7 +255,7 @@ final class DevicePairingUITests: XCTestCase {
 }
 ```
 
-When the app needs different behavior under UI tests (e.g. inject a stub network layer), check the launch arguments in `SmartHomeAppIOSApp.swift`.
+When the app needs different behavior under UI tests (e.g. inject a stub network layer), check the launch arguments in `MyHomeApp.swift`.
 
 ## What to Test (and What to Skip)
 
@@ -310,16 +310,16 @@ If the coverage report flags a gap, ask whether the uncovered code is *behavior*
 ```bash
 # Unit tests — the plan to run after every change (fast, no UI tests)
 xcodebuild test \
-  -scheme SmartHomeAppIOS \
+  -scheme MyHomeApp \
   -destination 'platform=iOS Simulator,name=iPhone 13 mini' \
   -testPlan UnitTests
 
 # A single Swift Testing test (note: dot path, not slash, for the method)
 xcodebuild test \
-  -scheme SmartHomeAppIOS \
+  -scheme MyHomeApp \
   -destination 'platform=iOS Simulator,name=iPhone 13 mini' \
   -testPlan UnitTests \
-  -only-testing:SmartHomeAppIOSTests/DevicesViewModelTests/loadWhenServiceSucceedsSetsLoadedState
+  -only-testing:MyHomeAppTests/DevicesViewModelTests/loadWhenServiceSucceedsSetsLoadedState
 
 # In Xcode: ⌘U (defaults to the UnitTests plan)
 ```
