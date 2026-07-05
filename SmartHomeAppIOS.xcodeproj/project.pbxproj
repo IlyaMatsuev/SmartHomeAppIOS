@@ -39,6 +39,7 @@
 		90638B062FCA332700FD7F19 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		90D63E922FDA0D2F0090797B /* AllTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = AllTests.xctestplan; sourceTree = "<group>"; };
 		90D63E932FDA0D2F0090797B /* UnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UnitTests.xctestplan; sourceTree = "<group>"; };
+		9E9E9E9E00000000E9E9E9E9 /* Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.xcconfig; sourceTree = "<group>"; };
 		90FC3DCA2FFAA94F00A13677 /* docker-compose.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = "docker-compose.yaml"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -105,6 +106,7 @@
 				90638B032FCA2E6800FD7F19 /* .swiftlint.yaml */,
 				90638AE92FCA2BF600FD7F19 /* .claudeignore */,
 				90FC3DCA2FFAA94F00A13677 /* docker-compose.yaml */,
+				9E9E9E9E00000000E9E9E9E9 /* Local.xcconfig */,
 				90638B042FCA2E6800FD7F19 /* CLAUDE.md */,
 				90638B052FCA31D800FD7F19 /* README.md */,
 				90638B062FCA332700FD7F19 /* LICENSE */,
@@ -312,6 +314,7 @@
 /* Begin XCBuildConfiguration section */
 		90380FF12FC7942E000FCB28 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9E9E9E9E00000000E9E9E9E9 /* Local.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -345,7 +348,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = 84L7NX22T3;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -376,6 +378,7 @@
 		};
 		90380FF22FC7942E000FCB28 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9E9E9E9E00000000E9E9E9E9 /* Local.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -409,7 +412,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 84L7NX22T3;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -433,12 +435,12 @@
 		};
 		90380FF42FC7942E000FCB28 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9E9E9E9E00000000E9E9E9E9 /* Local.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84L7NX22T3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "My Home";
@@ -472,12 +474,12 @@
 		};
 		90380FF52FC7942E000FCB28 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9E9E9E9E00000000E9E9E9E9 /* Local.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84L7NX22T3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "My Home";
@@ -511,11 +513,11 @@
 		};
 		90380FF72FC7942E000FCB28 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9E9E9E9E00000000E9E9E9E9 /* Local.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84L7NX22T3;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				MARKETING_VERSION = 1.0;
@@ -533,11 +535,11 @@
 		};
 		90380FF82FC7942E000FCB28 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9E9E9E9E00000000E9E9E9E9 /* Local.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84L7NX22T3;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				MARKETING_VERSION = 1.0;
@@ -555,10 +557,10 @@
 		};
 		90380FFA2FC7942E000FCB28 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9E9E9E9E00000000E9E9E9E9 /* Local.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84L7NX22T3;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ilyamatsuev.SmartHomeAppIOSUITests;
@@ -575,10 +577,10 @@
 		};
 		90380FFB2FC7942E000FCB28 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9E9E9E9E00000000E9E9E9E9 /* Local.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84L7NX22T3;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ilyamatsuev.SmartHomeAppIOSUITests;

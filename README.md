@@ -12,13 +12,19 @@ iOS client for the [MySmartHome](https://github.com/IlyaMatsuev/MySmartHome) hub
 ## Setup
 
 1. Clone the repo and open `SmartHomeAppIOS.xcodeproj` in Xcode.
-2. Install developer tools (one-time):
+2. Copy [Local.xcconfig.example](Local.xcconfig.example) to `Local.xcconfig` and set your values:
+
+```bash
+cp Local.xcconfig.example Local.xcconfig
+```
+
+3. Install developer tools (one-time):
 
 ```bash
 brew install swiftlint
 ```
 
-3. Wait for Xcode to resolve Swift Package Manager dependencies on first open.
+4. Wait for Xcode to resolve Swift Package Manager dependencies on first open.
 
 Dependencies are managed through SPM and pinned in `Package.resolved`. No CocoaPods or Carthage.
 
