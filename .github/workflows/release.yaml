@@ -38,6 +38,12 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Create stub Local.xcconfig
+        run: cp Local.xcconfig.example Local.xcconfig
+        # Local.xcconfig is gitignored (holds each dev's team ID). The workflow
+        # builds unsigned, so the placeholder value never gets used — the file
+        # only needs to exist so pbxproj's baseConfigurationReference resolves.
+
       - name: Resolve SPM dependencies
         run: xcodebuild -resolvePackageDependencies -scheme SmartHomeAppIOS
 
