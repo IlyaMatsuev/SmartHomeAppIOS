@@ -64,3 +64,6 @@ fastlane/test_output
 
 # Claude Code local state
 .claude/scheduled_tasks.lock
+
+# Data
+data/**

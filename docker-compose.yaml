@@ -1,0 +1,10 @@
+version: '3.3'
+services:
+  sidestore-anisette:
+    image: dadoum/anisette-v3-server:latest
+    container_name: anisette
+    restart: always
+    ports:
+      - "6969:6969"
+    volumes:
+      - ./data/sidestore-anisette:/home/Alcoholic/.config/anisette-v3/lib/

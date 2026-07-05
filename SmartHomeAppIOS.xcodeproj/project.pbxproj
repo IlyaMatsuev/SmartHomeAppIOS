@@ -41,6 +41,7 @@
 		90638B062FCA332700FD7F19 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		90D63E922FDA0D2F0090797B /* AllTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = AllTests.xctestplan; sourceTree = "<group>"; };
 		90D63E932FDA0D2F0090797B /* UnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UnitTests.xctestplan; sourceTree = "<group>"; };
+		90FC3DCA2FFAA94F00A13677 /* docker-compose.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = "docker-compose.yaml"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -96,6 +97,7 @@
 		90380FC92FC7942C000FCB28 = {
 			isa = PBXGroup;
 			children = (
+				90FC3DCA2FFAA94F00A13677 /* docker-compose.yaml */,
 				90638AFF2FCA2C5700FD7F19 /* .claude */,
 				90380FD42FC7942C000FCB28 /* SmartHomeAppIOS */,
 				90380FE22FC7942E000FCB28 /* SmartHomeAppIOSTests */,
