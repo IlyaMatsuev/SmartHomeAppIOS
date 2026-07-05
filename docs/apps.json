@@ -9,7 +9,7 @@
       "developerName": "Ilya Matsuev",
       "subtitle": "iOS client for the MyHome ecosystem",
       "localizedDescription": "iOS client for the MySmartHome hub. Built with SwiftUI.",
-      "iconURL": "https://ilyamatsuev.github.io/SmartHomeAppIOS/icon.png",
+      "iconURL": "https://ilyamatsuev.github.io/SmartHomeAppIOS/assets/icon.png",
       "tintColor": "4B6EF5",
       "screenshotURLs": [],
       "versions": []

@@ -4,7 +4,7 @@ iOS client for the [MySmartHome](https://github.com/IlyaMatsuev/MySmartHome) hub
 
 **Download page:** <https://ilyamatsuev.github.io/SmartHomeAppIOS/>
 
-![My Home Banner](./public/banner.png)
+![My Home Banner](./docs/assets/banner.png)
 
 ## Requirements
 

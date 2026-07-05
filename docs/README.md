@@ -2,6 +2,8 @@
 
 iOS client for the MySmartHome hub. Control your devices, scenarios, and rooms from your iPhone.
 
+![My Home Banner](assets/banner.png)
+
 ## Before you start
 
 - iPhone running **iOS 18.6** or newer
@@ -19,7 +21,7 @@ The app is distributed through [SideStore](https://sidestore.io) — a free, on-
    - The maintainer's curated list (self-hosted server first, then community fallbacks):
 
      ```
-     https://gist.githubusercontent.com/IlyaMatsuev/REPLACE_WITH_GIST_ID/raw/sidestore-anisette-servers.json
+     https://gist.githubusercontent.com/IlyaMatsuev/c3d5181a9260493d8a861bd80506ace4/raw/sidestore-anisette-servers.json
      ```
 
    - Or the public community list:
