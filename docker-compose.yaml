@@ -1,10 +1,12 @@
-version: '3.3'
 services:
   sidestore-anisette:
     image: dadoum/anisette-v3-server:latest
-    container_name: anisette
+    container_name: sidestore-anisette
     restart: always
     ports:
       - "6969:6969"
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     volumes:
       - ./data/sidestore-anisette:/home/Alcoholic/.config/anisette-v3/lib/
