@@ -77,6 +77,23 @@ swiftlint
 swiftlint --fix
 ```
 
+## SideStore anisette servers
+
+The app is installed on-device via [SideStore](https://sidestore.io). SideStore needs an anisette server to talk to Apple, and it lets you point it at a custom **anisette servers list** URL (Settings → Anisette Servers).
+
+This repo ships that list as [sidestore-anisette-servers.json](sidestore-anisette-servers.json). Entry 1 is the self-hosted server from [docker-compose.yaml](docker-compose.yaml); the rest are community fallbacks in case the local one is unreachable.
+
+### Hosting the list
+
+SideStore fetches the list over HTTPS on every refresh, so it needs a stable raw URL. This repo uses a **secret GitHub gist** — unlisted, not indexed, but publicly reachable to anyone with the link, which is fine because SideStore itself needs to fetch it unauthenticated.
+
+One-time setup:
+
+1. Go to <https://gist.github.com> → **New secret gist**.
+2. Filename: `sidestore-anisette-servers.json`. Paste the contents of the file in this repo.
+3. Create the gist. Open the **Raw** button and copy that URL.
+4. In SideStore → Settings → paste the raw URL into **Refresh anisette servers URL** and refresh.
+
 ## License
 
 [PolyForm Noncommercial](LICENSE)
