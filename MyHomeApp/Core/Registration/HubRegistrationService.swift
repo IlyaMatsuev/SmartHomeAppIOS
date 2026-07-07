@@ -47,8 +47,8 @@ struct HubRegistrationService: RegistrationService {
 
     private static func map(_ error: HubAPIError) -> RegistrationError {
         switch error {
-        case .http(let status, _) where status == 409: .alreadyRequested
-        case .http(let status, _) where status == 404: .requestNotFound
+        case .conflict: .alreadyRequested
+        case .notFound: .requestNotFound
         default: .unexpected
         }
     }

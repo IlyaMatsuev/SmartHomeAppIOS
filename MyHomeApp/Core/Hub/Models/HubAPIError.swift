@@ -8,6 +8,7 @@ enum HubAPIError: LocalizedError, Equatable {
     case forbidden
     case validation(String, String)
     case notFound
+    case conflict
     case unexpected
 
     var errorDescription: String? {
@@ -26,6 +27,8 @@ enum HubAPIError: LocalizedError, Equatable {
             message
         case .notFound:
             "The requested resource was not found"
+        case .conflict:
+            "The request conflicts with the current state of the server"
         case .unexpected:
             "Something went wrong"
         }

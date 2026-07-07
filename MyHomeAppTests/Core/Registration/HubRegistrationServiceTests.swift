@@ -22,7 +22,7 @@ struct HubRegistrationServiceTests {
         #expect(client.sentRequests.count == 1)
         let request = try #require(client.sentRequests.first)
         #expect(request.method == .post)
-        #expect(request.uri == "/auth/register/requests")
+        #expect(request.path == "/auth/register/requests")
         #expect(request.protected == false)
     }
 
@@ -61,7 +61,7 @@ struct HubRegistrationServiceTests {
 
     @Test
     func requestAccessMapsConflictToAlreadyRequested() async {
-        client.response = .error(HubAPIError.http(status: 409, body: nil))
+        client.response = .error(HubAPIError.conflict)
 
         await #expect(throws: RegistrationError.alreadyRequested) {
             _ = try await service.requestAccess(email: "dup@home.dev", comment: nil)
@@ -97,7 +97,7 @@ struct HubRegistrationServiceTests {
         #expect(client.sentRequests.count == 1)
         let request = try #require(client.sentRequests.first)
         #expect(request.method == .get)
-        #expect(request.uri == "/auth/register/requests/req-7")
+        #expect(request.path == "/auth/register/requests/req-7")
         #expect(request.protected == false)
         #expect(request.body == nil)
     }
@@ -113,7 +113,7 @@ struct HubRegistrationServiceTests {
 
     @Test
     func checkStatusMapsNotFoundToRequestNotFound() async {
-        client.response = .error(HubAPIError.http(status: 404, body: nil))
+        client.response = .error(HubAPIError.notFound)
 
         await #expect(throws: RegistrationError.requestNotFound) {
             _ = try await service.checkStatus(requestId: "missing")

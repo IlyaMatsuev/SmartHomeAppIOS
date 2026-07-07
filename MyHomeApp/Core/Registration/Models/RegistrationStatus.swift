@@ -13,7 +13,7 @@ enum RegistrationStatus: String, Codable, Equatable, Sendable, CaseIterable {
 
     var detail: String {
         switch self {
-        case .pending: "Your request is waiting for the hub owner to approve it. You can come back later to check again."
+        case .pending: "Your request is waiting for the hub owner to approve it. Come back later to check again."
         case .approved: "Your request was approved. You can now sign in with the credentials sent to your email."
         case .rejected: "Your request was rejected. Reach out to the hub owner if you think this was a mistake."
         }
