@@ -57,16 +57,17 @@ struct RegistrationStatusViewModelTests {
         #expect(viewModel.errorMessage == RegistrationError.unexpected.errorDescription)
     }
 
-    // MARK: - backToLogin()
+    // MARK: - cancel()
 
     @Test
-    func backToLoginClearsPendingRequest() async {
+    func cancelClearsPendingRequest() async {
         let request = RegistrationRequest(externalId: "r-1", email: "a@b.dev", status: .pending)
         await seedPendingRequest(request)
 
-        viewModel.backToLogin()
+        await viewModel.cancel()
 
         #expect(!store.hasPendingRequest)
         #expect(viewModel.request == nil)
+        #expect(!viewModel.cancelling)
     }
 }

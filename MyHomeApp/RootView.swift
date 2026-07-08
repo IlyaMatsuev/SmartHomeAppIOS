@@ -11,17 +11,15 @@ struct RootView: View {
         case loading
         case serverSetup
         case login
-        case registrationStatus
         case main
     }
 
     private var stage: Stage {
-        switch (serverConfigStore.state, sessionStore.state, registrationStore.state) {
-        case (.loading, _, _), (_, .loading, _), (_, _, .loading): .loading
-        case (.unconfigured, _, _): .serverSetup
-        case (.configured, .authenticated, _): .main
-        case (.configured, .unauthenticated, .pending): .registrationStatus
-        case (.configured, .unauthenticated, .absent): .login
+        switch (serverConfigStore.state, sessionStore.state) {
+        case (.loading, _), (_, .loading): .loading
+        case (.unconfigured, _): .serverSetup
+        case (.configured, .authenticated): .main
+        case (.configured, .unauthenticated): .login
         }
     }
 
@@ -52,8 +50,6 @@ struct RootView: View {
             ServerSetupView()
         case .login:
             LoginView()
-        case .registrationStatus:
-            RegistrationStatusView()
         case .main:
             ContentView()
         }

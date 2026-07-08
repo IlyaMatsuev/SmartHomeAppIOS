@@ -61,6 +61,21 @@ struct RegistrationStoreTests {
     }
 
     @Test
+    func requestAccessOverridesPreviousPendingRequest() async throws {
+        let first = RegistrationRequest(externalId: "r-1", email: "first@home.dev", status: .pending)
+        service.requestAccessResult = .success(first)
+        try await store.requestAccess(email: "first@home.dev", comment: nil)
+
+        let second = RegistrationRequest(externalId: "r-2", email: "second@home.dev", status: .pending)
+        service.requestAccessResult = .success(second)
+        try await store.requestAccess(email: "second@home.dev", comment: nil)
+
+        #expect(store.state == .pending(second))
+        #expect(store.pendingRequest == second)
+        #expect(persistence.savedRequests == [first, second])
+    }
+
+    @Test
     func requestAccessOnFailureThrowsAndDoesNotPersist() async {
         await store.load()
         service.requestAccessResult = .failure(RegistrationError.alreadyRequested)
@@ -122,6 +137,21 @@ struct RegistrationStoreTests {
         await store.load()
 
         store.clear()
+
+        #expect(store.state == .absent)
+        #expect(persistence.clearCallCount == 1)
+        #expect(!store.hasPendingRequest)
+    }
+
+    // MARK: - cancel()
+
+    @Test
+    func cancelRemovesPersistedRequestAndBecomesAbsent() async {
+        let request = RegistrationRequest(externalId: "r-1", email: "a@b.dev", status: .pending)
+        persistence.loadResult = .success(request)
+        await store.load()
+
+        await store.cancel()
 
         #expect(store.state == .absent)
         #expect(persistence.clearCallCount == 1)

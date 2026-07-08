@@ -3,25 +3,28 @@ import SwiftUI
 struct RegistrationStatusView: View {
     @Environment(RegistrationStore.self) private var registrationStore
     @State private var viewModel: RegistrationStatusViewModel?
+    var onDismiss: () -> Void
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color("BackgroundPrimary").ignoresSafeArea()
+        ZStack {
+            Color("BackgroundPrimary").ignoresSafeArea()
 
-                if let viewModel {
+            if let viewModel {
+                ScrollView {
                     content(viewModel)
+                        .containerRelativeFrame(.vertical, alignment: .center)
                 }
+                .refreshable { await viewModel.refresh() }
             }
-            .navigationTitle("Access Request")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    ServerSwitcherMenu()
-                }
-            }
-            .toolbarBackground(.hidden, for: .navigationBar)
         }
+        .navigationTitle("Access Request")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ServerSwitcherMenu()
+            }
+        }
+        .toolbarBackground(.hidden, for: .navigationBar)
         .task {
             if viewModel == nil {
                 viewModel = RegistrationStatusViewModel(registrationStore: registrationStore)
@@ -41,7 +44,7 @@ struct RegistrationStatusView: View {
                 Spacer()
                 actions(viewModel)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(maxWidth: .infinity)
             .padding(24)
         }
     }
@@ -82,26 +85,29 @@ struct RegistrationStatusView: View {
     private func actions(_ viewModel: RegistrationStatusViewModel) -> some View {
         VStack(spacing: 12) {
             Button {
-                Task { await viewModel.refresh() }
+                Task {
+                    await viewModel.cancel()
+                    onDismiss()
+                }
             } label: {
                 ZStack {
-                    Text("Refresh status")
-                        .opacity(viewModel.refreshing ? 0 : 1)
-                    if viewModel.refreshing {
-                        ProgressView().tint(.white)
+                    Text("Cancel request")
+                        .opacity(viewModel.cancelling ? 0 : 1)
+                    if viewModel.cancelling {
+                        ProgressView().tint(Color("Danger"))
                     }
                 }
                 .font(.headline)
-                .foregroundStyle(.white)
+                .foregroundStyle(Color("Danger"))
                 .frame(maxWidth: .infinity, minHeight: 48)
-                .background(Color("AccentPrimary"))
+                .background(Color("BackgroundSecondary"))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-                .opacity(viewModel.refreshing ? 0.5 : 1)
+                .opacity(viewModel.cancelling ? 0.5 : 1)
             }
-            .disabled(viewModel.refreshing)
+            .disabled(viewModel.cancelling)
 
             Button("Back to login") {
-                viewModel.backToLogin()
+                onDismiss()
             }
             .font(.footnote)
             .foregroundStyle(Color("AccentPrimary"))
@@ -133,10 +139,12 @@ struct RegistrationStatusView: View {
     )
     let server = Server(.http, "hub.local:8080", remote: false, label: "Home")
     let serverStore = ServerConfigStore(persistence: InMemoryServerConfigPersistence(initial: [server]))
-    return RegistrationStatusView()
-        .environment(registrationStore)
-        .environment(serverStore)
-        .task { await serverStore.load() }
+    return NavigationStack {
+        RegistrationStatusView(onDismiss: {})
+            .environment(registrationStore)
+            .environment(serverStore)
+    }
+    .task { await serverStore.load() }
 }
 
 #Preview("Approved") {
@@ -147,8 +155,10 @@ struct RegistrationStatusView: View {
     )
     let server = Server(.http, "hub.local:8080", remote: false, label: "Home")
     let serverStore = ServerConfigStore(persistence: InMemoryServerConfigPersistence(initial: [server]))
-    return RegistrationStatusView()
-        .environment(registrationStore)
-        .environment(serverStore)
-        .task { await serverStore.load() }
+    return NavigationStack {
+        RegistrationStatusView(onDismiss: {})
+            .environment(registrationStore)
+            .environment(serverStore)
+    }
+    .task { await serverStore.load() }
 }

@@ -65,6 +65,12 @@ final class RegistrationStore {
         return status
     }
 
+    func cancel() async {
+        // The server callout to withdraw the request (via pendingRequest?.externalId)
+        // will be made here before clearing locally; not yet wired up.
+        clear()
+    }
+
     func clear() {
         do {
             try persistence.clear()

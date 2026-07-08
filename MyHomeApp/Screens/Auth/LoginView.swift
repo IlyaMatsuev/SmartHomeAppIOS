@@ -2,18 +2,27 @@ import SwiftUI
 
 struct LoginView: View {
     @Environment(SessionStore.self) private var sessionStore
+    @Environment(RegistrationStore.self) private var registrationStore
     @State private var viewModel: LoginViewModel?
-    @State private var showRegistration = false
+    @State private var path: [Route] = []
+
+    private enum Route: Hashable {
+        case requestAccess
+        case requestStatus
+    }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ZStack {
                 Color("BackgroundPrimary").ignoresSafeArea()
 
                 if let viewModel {
-                    LoginForm(viewModel: viewModel) {
-                        showRegistration = true
-                    }
+                    LoginForm(
+                        viewModel: viewModel,
+                        hasPendingRequest: registrationStore.hasPendingRequest,
+                        onRequestAccess: { path.append(.requestAccess) },
+                        onOpenRequest: { path.append(.requestStatus) }
+                    )
                 }
             }
             .toolbar {
@@ -23,8 +32,13 @@ struct LoginView: View {
             }
             .toolbarBackground(.hidden, for: .navigationBar)
             .navigationBarTitleDisplayMode(.inline)
-            .navigationDestination(isPresented: $showRegistration) {
-                RegistrationRequestView()
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case .requestAccess:
+                    RegistrationRequestView(onSubmitted: { path = [.requestStatus] })
+                case .requestStatus:
+                    RegistrationStatusView(onDismiss: { path.removeAll() })
+                }
             }
         }
         .onAppear {

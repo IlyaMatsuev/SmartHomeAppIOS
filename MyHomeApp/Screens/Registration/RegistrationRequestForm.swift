@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RegistrationRequestForm: View {
     @Bindable var viewModel: RegistrationRequestViewModel
+    var onSubmitted: () -> Void
 
     var body: some View {
         VStack(spacing: 24) {
@@ -52,7 +53,11 @@ struct RegistrationRequestForm: View {
 
     private var requestButton: some View {
         Button {
-            Task { await viewModel.submit() }
+            Task {
+                if await viewModel.submit() {
+                    onSubmitted()
+                }
+            }
         } label: {
             ZStack {
                 Text("Request access")

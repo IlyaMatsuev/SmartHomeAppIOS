@@ -47,8 +47,9 @@ struct RegistrationRequestViewModelTests {
     func submitWithValidEmailRequestsAccessThroughStore() async {
         viewModel.email = "new@home.dev"
 
-        await viewModel.submit()
+        let succeeded = await viewModel.submit()
 
+        #expect(succeeded)
         #expect(service.requestAccessCallCount == 1)
         #expect(service.requestedEmails == ["new@home.dev"])
         #expect(service.requestedComments == [nil])
@@ -81,8 +82,9 @@ struct RegistrationRequestViewModelTests {
         viewModel.email = "new@home.dev"
         service.requestAccessResult = .failure(RegistrationError.alreadyRequested)
 
-        await viewModel.submit()
+        let succeeded = await viewModel.submit()
 
+        #expect(!succeeded)
         #expect(viewModel.errorMessage == RegistrationError.alreadyRequested.errorDescription)
         #expect(!store.hasPendingRequest)
     }
@@ -91,8 +93,9 @@ struct RegistrationRequestViewModelTests {
     func submitWithInvalidEmailDoesNotCallService() async {
         viewModel.email = "bad"
 
-        await viewModel.submit()
+        let succeeded = await viewModel.submit()
 
+        #expect(!succeeded)
         #expect(service.requestAccessCallCount == 0)
     }
 

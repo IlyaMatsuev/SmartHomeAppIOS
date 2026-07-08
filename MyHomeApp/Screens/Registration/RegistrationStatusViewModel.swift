@@ -7,6 +7,7 @@ final class RegistrationStatusViewModel {
     private let registrationStore: RegistrationStore
 
     private(set) var refreshing = false
+    private(set) var cancelling = false
     private(set) var errorMessage: String?
 
     var request: RegistrationRequest? {
@@ -30,7 +31,11 @@ final class RegistrationStatusViewModel {
         refreshing = false
     }
 
-    func backToLogin() {
-        registrationStore.clear()
+    func cancel() async {
+        guard !cancelling else { return }
+
+        cancelling = true
+        await registrationStore.cancel()
+        cancelling = false
     }
 }

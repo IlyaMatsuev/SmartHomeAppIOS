@@ -2,7 +2,9 @@ import SwiftUI
 
 struct LoginForm: View {
     @Bindable var viewModel: LoginViewModel
+    var hasPendingRequest: Bool
     var onRequestAccess: () -> Void
+    var onOpenRequest: () -> Void
 
     var body: some View {
         VStack(spacing: 24) {
@@ -42,6 +44,7 @@ struct LoginForm: View {
         }
     }
 
+    @ViewBuilder
     private var actions: some View {
         VStack(spacing: 12) {
             Button {
@@ -51,11 +54,32 @@ struct LoginForm: View {
             }
             .disabled(!viewModel.canSubmit)
 
+            if hasPendingRequest {
+                pendingRequestTile
+            }
+
             Button("No account yet?") {
                 onRequestAccess()
             }
             .font(.footnote)
             .foregroundStyle(Color("AccentPrimary"))
+        }
+    }
+
+    private var pendingRequestTile: some View {
+        Button(action: onOpenRequest) {
+            HStack {
+                Text("My request")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(Color("TextPrimary"))
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(Color("AccentPrimary"))
+            }
+            .padding()
+            .background(Color("BackgroundSecondary"))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
 

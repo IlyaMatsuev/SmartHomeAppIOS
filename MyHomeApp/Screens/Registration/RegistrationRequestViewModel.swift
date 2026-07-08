@@ -34,20 +34,23 @@ final class RegistrationRequestViewModel {
         self.registrationStore = registrationStore
     }
 
-    func submit() async {
-        guard canSubmit else { return }
+    @discardableResult
+    func submit() async -> Bool {
+        guard canSubmit else { return false }
 
         loading = true
         errorMessage = nil
+        defer { loading = false }
         do {
             let trimmedComment = comment.trimmingCharacters(in: .whitespacesAndNewlines)
             try await registrationStore.requestAccess(
                 email: email,
                 comment: trimmedComment.isEmpty ? nil : trimmedComment
             )
+            return true
         } catch {
             errorMessage = error.localizedDescription
+            return false
         }
-        loading = false
     }
 }
