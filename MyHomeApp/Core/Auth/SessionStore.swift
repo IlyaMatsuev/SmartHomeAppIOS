@@ -53,6 +53,15 @@ final class SessionStore {
         state = .authenticated(AuthSession(token: token))
     }
 
+    func logout() {
+        do {
+            try tokenStore.clear()
+        } catch {
+            Self.logger.error("Failed to clear the session during logout: \(error.localizedDescription)")
+        }
+        state = .unauthenticated
+    }
+
     func refresh() async -> Bool {
         do {
             guard let token = sessionToken else {
