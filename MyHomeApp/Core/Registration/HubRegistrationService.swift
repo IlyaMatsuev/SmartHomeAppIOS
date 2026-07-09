@@ -27,7 +27,7 @@ struct HubRegistrationService: RegistrationService {
             let response: CreateResponse = try await client.send(request)
             return RegistrationRequest(externalId: response.externalId, email: email, status: .pending)
         } catch let error as HubAPIError {
-            throw Self.map(error)
+            throw Self.mapError(error)
         } catch {
             throw RegistrationError.unexpected
         }
@@ -39,13 +39,13 @@ struct HubRegistrationService: RegistrationService {
             let response: StatusResponse = try await client.send(request)
             return response.status
         } catch let error as HubAPIError {
-            throw Self.map(error)
+            throw Self.mapError(error)
         } catch {
             throw RegistrationError.unexpected
         }
     }
 
-    private static func map(_ error: HubAPIError) -> RegistrationError {
+    private static func mapError(_ error: HubAPIError) -> RegistrationError {
         switch error {
         case .conflict: .alreadyRequested
         case .notFound: .requestNotFound

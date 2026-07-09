@@ -68,17 +68,14 @@ struct LoginForm: View {
 
     private var pendingRequestTile: some View {
         Button(action: onOpenRequest) {
-            HStack {
+            HStack(spacing: 8) {
                 Text("My request")
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(Color("TextPrimary"))
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(Color("AccentPrimary"))
+                Image(systemName: "arrow.right")
             }
-            .padding()
-            .background(Color("BackgroundSecondary"))
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(Color("AccentPrimary"))
+            .frame(maxWidth: .infinity, minHeight: 48)
+            .background(Color("AccentPrimary").opacity(0.15))
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }

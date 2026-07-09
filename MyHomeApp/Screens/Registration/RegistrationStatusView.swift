@@ -3,6 +3,7 @@ import SwiftUI
 struct RegistrationStatusView: View {
     @Environment(RegistrationStore.self) private var registrationStore
     @State private var viewModel: RegistrationStatusViewModel?
+    @State private var showCancelConfirmation = false
     var onDismiss: () -> Void
 
     var body: some View {
@@ -25,6 +26,21 @@ struct RegistrationStatusView: View {
             }
         }
         .toolbarBackground(.hidden, for: .navigationBar)
+        .confirmationDialog(
+            "Cancel access request?",
+            isPresented: $showCancelConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Cancel request", role: .destructive) {
+                Task {
+                    await viewModel?.cancel()
+                    onDismiss()
+                }
+            }
+            Button("Keep request", role: .cancel) {}
+        } message: {
+            Text("Your request to join this Home will be withdrawn. You can request access again later.")
+        }
         .task {
             if viewModel == nil {
                 viewModel = RegistrationStatusViewModel(registrationStore: registrationStore)
@@ -51,9 +67,9 @@ struct RegistrationStatusView: View {
 
     private func badge(for status: RegistrationStatus) -> some View {
         VStack(spacing: 12) {
-            Image(systemName: iconName(for: status))
+            Image(systemName: status.icon)
                 .font(.system(size: 56))
-                .foregroundStyle(color(for: status))
+                .foregroundStyle(status.color)
             Text(status.label)
                 .font(.title2.bold())
                 .foregroundStyle(Color("TextPrimary"))
@@ -62,13 +78,13 @@ struct RegistrationStatusView: View {
 
     private func details(for request: RegistrationRequest) -> some View {
         VStack(spacing: 8) {
+            Text(request.email)
+                .font(.footnote.monospaced())
+                .foregroundStyle(Color("TextSecondary"))
             Text(request.status.detail)
                 .font(.subheadline)
                 .foregroundStyle(Color("TextSecondary"))
                 .multilineTextAlignment(.center)
-            Text(request.email)
-                .font(.footnote.monospaced())
-                .foregroundStyle(Color("TextSecondary"))
         }
     }
 
@@ -83,51 +99,24 @@ struct RegistrationStatusView: View {
     }
 
     private func actions(_ viewModel: RegistrationStatusViewModel) -> some View {
-        VStack(spacing: 12) {
-            Button {
-                Task {
-                    await viewModel.cancel()
-                    onDismiss()
+        Button {
+            showCancelConfirmation = true
+        } label: {
+            ZStack {
+                Text("Cancel request")
+                    .opacity(viewModel.cancelling ? 0 : 1)
+                if viewModel.cancelling {
+                    ProgressView().tint(Color("Danger"))
                 }
-            } label: {
-                ZStack {
-                    Text("Cancel request")
-                        .opacity(viewModel.cancelling ? 0 : 1)
-                    if viewModel.cancelling {
-                        ProgressView().tint(Color("Danger"))
-                    }
-                }
-                .font(.headline)
-                .foregroundStyle(Color("Danger"))
-                .frame(maxWidth: .infinity, minHeight: 48)
-                .background(Color("BackgroundSecondary"))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .opacity(viewModel.cancelling ? 0.5 : 1)
             }
-            .disabled(viewModel.cancelling)
-
-            Button("Back to login") {
-                onDismiss()
-            }
-            .font(.footnote)
-            .foregroundStyle(Color("AccentPrimary"))
+            .font(.headline)
+            .foregroundStyle(Color("Danger"))
+            .frame(maxWidth: .infinity, minHeight: 48)
+            .background(Color("BackgroundSecondary"))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .opacity(viewModel.cancelling ? 0.5 : 1)
         }
-    }
-
-    private func iconName(for status: RegistrationStatus) -> String {
-        switch status {
-        case .pending: "clock.badge.questionmark"
-        case .approved: "checkmark.seal.fill"
-        case .rejected: "xmark.seal.fill"
-        }
-    }
-
-    private func color(for status: RegistrationStatus) -> Color {
-        switch status {
-        case .pending: Color("Warning")
-        case .approved: Color("Success")
-        case .rejected: Color("Danger")
-        }
+        .disabled(viewModel.cancelling)
     }
 }
 

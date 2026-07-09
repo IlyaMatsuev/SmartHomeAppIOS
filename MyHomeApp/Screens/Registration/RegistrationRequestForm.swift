@@ -34,7 +34,7 @@ struct RegistrationRequestForm: View {
             Text("Join this home")
                 .font(.largeTitle.bold())
                 .foregroundStyle(Color("TextPrimary"))
-            Text("Enter your email and we'll send your request to the hub owner for approval.")
+            Text("Enter your email and we'll send your request to the Home admin for approval")
                 .font(.subheadline)
                 .foregroundStyle(Color("TextSecondary"))
                 .multilineTextAlignment(.center)
