@@ -7,8 +7,9 @@ struct LoginView: View {
     @State private var path: [Route] = []
 
     private enum Route: Hashable {
-        case requestAccess
-        case requestStatus
+        case newRegistrationRequest(email: String, comment: String)
+        case registrationRequestStatus
+        case register
     }
 
     var body: some View {
@@ -20,8 +21,8 @@ struct LoginView: View {
                     LoginForm(
                         viewModel: viewModel,
                         hasPendingRequest: registrationStore.hasPendingRequest,
-                        onRequestAccess: { path.append(.requestAccess) },
-                        onOpenRequest: { path.append(.requestStatus) }
+                        onRequestAccess: { path.append(.newRegistrationRequest(email: "", comment: "")) },
+                        onOpenRequest: { path.append(.registrationRequestStatus) }
                     )
                 }
             }
@@ -34,10 +35,30 @@ struct LoginView: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(for: Route.self) { route in
                 switch route {
-                case .requestAccess:
-                    RegistrationRequestView(onSubmitted: { path = [.requestStatus] })
-                case .requestStatus:
-                    RegistrationStatusView(onDismiss: { path.removeAll() })
+                case .newRegistrationRequest(let email, let comment):
+                    RegistrationRequestView(
+                        email: email,
+                        comment: comment,
+                        onSubmitted: { path = [.registrationRequestStatus] },
+                        onAlreadyApproved: { path.append(.register) }
+                    )
+                case .registrationRequestStatus:
+                    RegistrationStatusView(
+                        onDismiss: { path.removeAll() },
+                        onRegister: { path.append(.register) },
+                        onResubmit: {
+                            let email = registrationStore.pendingRequest?.email ?? ""
+                            let comment = registrationStore.pendingRequest?.requesterComment ?? ""
+                            path.append(.newRegistrationRequest(email: email, comment: comment))
+                        }
+                    )
+                case .register:
+                    RegisterView(onRegistered: {
+                        let email = registrationStore.pendingRequest?.email ?? ""
+                        registrationStore.clear()
+                        path.removeAll()
+                        viewModel?.email = email
+                    })
                 }
             }
         }

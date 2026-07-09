@@ -5,6 +5,8 @@ struct RegistrationStatusView: View {
     @State private var viewModel: RegistrationStatusViewModel?
     @State private var showCancelConfirmation = false
     var onDismiss: () -> Void
+    var onRegister: () -> Void
+    var onResubmit: () -> Void
 
     var body: some View {
         ZStack {
@@ -32,8 +34,10 @@ struct RegistrationStatusView: View {
             titleVisibility: .visible
         ) {
             Button("Cancel request", role: .destructive) {
-                viewModel?.cancel()
-                onDismiss()
+                Task {
+                    await viewModel?.cancel()
+                    onDismiss()
+                }
             }
             Button("Keep request", role: .cancel) {}
         } message: {
@@ -56,14 +60,14 @@ struct RegistrationStatusView: View {
                 details(for: request)
                 errorText(viewModel)
                 Spacer()
-                actions(viewModel)
+                actions(viewModel, request: request)
             }
             .frame(maxWidth: .infinity)
             .padding(24)
         }
     }
 
-    private func badge(for status: RegistrationStatus) -> some View {
+    private func badge(for status: RegistrationRequestStatus) -> some View {
         VStack(spacing: 12) {
             Image(systemName: status.icon)
                 .font(.system(size: 56))
@@ -76,13 +80,33 @@ struct RegistrationStatusView: View {
 
     private func details(for request: RegistrationRequest) -> some View {
         VStack(spacing: 8) {
+            if request.status == .approved {
+                roleTile(request.role)
+                    .padding(.top, 4)
+            }
+
             Text(request.email)
                 .font(.footnote.monospaced())
                 .foregroundStyle(Color("TextSecondary"))
-            Text(request.status.detail)
+
+            if let comment = request.requesterComment, !comment.isEmpty {
+                Text(comment)
+                    .font(.footnote.italic())
+                    .foregroundStyle(Color("TextSecondary"))
+                    .multilineTextAlignment(.center)
+            }
+
+            Text(request.status.explanation)
                 .font(.subheadline)
                 .foregroundStyle(Color("TextSecondary"))
                 .multilineTextAlignment(.center)
+
+            if request.blocked {
+                Text("You've been blocked from submitting new requests for this email.")
+                    .font(.footnote)
+                    .foregroundStyle(Color("Danger"))
+                    .multilineTextAlignment(.center)
+            }
         }
     }
 
@@ -96,7 +120,33 @@ struct RegistrationStatusView: View {
         }
     }
 
-    private func actions(_ viewModel: RegistrationStatusViewModel) -> some View {
+    private func roleTile(_ role: UserRole) -> some View {
+        Text(role.label)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(role.color)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(role.color.opacity(0.15))
+            .clipShape(Capsule())
+    }
+
+    @ViewBuilder
+    private func actions(_ viewModel: RegistrationStatusViewModel, request: RegistrationRequest) -> some View {
+        switch request.status {
+        case .pending:
+            cancelButton(viewModel)
+        case .approved:
+            createAccountButton
+        case .rejected:
+            if !request.blocked {
+                resubmitButton
+            }
+        case .cancelled:
+            resubmitButton
+        }
+    }
+
+    private func cancelButton(_ viewModel: RegistrationStatusViewModel) -> some View {
         Button {
             showCancelConfirmation = true
         } label: {
@@ -116,34 +166,60 @@ struct RegistrationStatusView: View {
         }
         .disabled(viewModel.cancelling)
     }
+
+    private var createAccountButton: some View {
+        Button(action: onRegister) {
+            Text("Create an account")
+                .font(.headline)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, minHeight: 48)
+                .background(Color("AccentPrimary"))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+    }
+
+    private var resubmitButton: some View {
+        Button(action: onResubmit) {
+            Text("Resubmit")
+                .font(.headline)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, minHeight: 48)
+                .background(Color("AccentPrimary"))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+    }
 }
 
 #Preview("Pending") {
-    let request = RegistrationRequest(externalId: "abc", email: "new@home.dev", status: .pending)
-    let registrationStore = RegistrationStore(
-        service: MockRegistrationService(operationDelay: .zero, status: .pending),
-        persistence: InMemoryRegistrationPersistence(initial: request)
-    )
-    let server = Server(.http, "hub.local:8080", remote: false, label: "Home")
-    let serverStore = ServerConfigStore(persistence: InMemoryServerConfigPersistence(initial: [server]))
-    return NavigationStack {
-        RegistrationStatusView(onDismiss: {})
-            .environment(registrationStore)
-            .environment(serverStore)
-    }
-    .task { await serverStore.load() }
+    registrationStatusPreview(status: .pending)
 }
 
 #Preview("Approved") {
-    let request = RegistrationRequest(externalId: "abc", email: "new@home.dev", status: .approved)
+    registrationStatusPreview(status: .approved)
+}
+
+#Preview("Rejected") {
+    registrationStatusPreview(status: .rejected)
+}
+
+@MainActor
+private func registrationStatusPreview(status: RegistrationRequestStatus) -> some View {
+    let request = RegistrationRequest(
+        externalId: "abc",
+        email: "new@home.dev",
+        requesterComment: "Please let me in!",
+        status: status,
+        role: .resident,
+        blocked: status == .rejected
+    )
     let registrationStore = RegistrationStore(
-        service: MockRegistrationService(operationDelay: .zero, status: .approved),
+        service: MockRegistrationService(operationDelay: .zero, status: status),
         persistence: InMemoryRegistrationPersistence(initial: request)
     )
     let server = Server(.http, "hub.local:8080", remote: false, label: "Home")
     let serverStore = ServerConfigStore(persistence: InMemoryServerConfigPersistence(initial: [server]))
     return NavigationStack {
-        RegistrationStatusView(onDismiss: {})
+        RegistrationStatusView(onDismiss: {}, onRegister: {}, onResubmit: {})
             .environment(registrationStore)
             .environment(serverStore)
     }

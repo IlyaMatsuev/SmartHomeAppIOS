@@ -15,7 +15,7 @@ struct HubRegistrationServiceTests {
 
     @Test
     func requestAccessSendsPostToRegisterRequestsAsUnprotected() async throws {
-        client.response = .data(Self.encodeCreateResponse(externalId: "req-1"))
+        client.response = .data(Self.encodeRequestResponse())
 
         _ = try await service.requestAccess(email: "new@home.dev", comment: nil)
 
@@ -28,7 +28,7 @@ struct HubRegistrationServiceTests {
 
     @Test
     func requestAccessSendsEmailWithoutCommentInRequestBody() async throws {
-        client.response = .data(Self.encodeCreateResponse(externalId: "req-1"))
+        client.response = .data(Self.encodeRequestResponse())
 
         _ = try await service.requestAccess(email: "new@home.dev", comment: nil)
 
@@ -40,7 +40,7 @@ struct HubRegistrationServiceTests {
 
     @Test
     func requestAccessSendsCommentInRequestBodyWhenProvided() async throws {
-        client.response = .data(Self.encodeCreateResponse(externalId: "req-1"))
+        client.response = .data(Self.encodeRequestResponse())
 
         _ = try await service.requestAccess(email: "new@home.dev", comment: "Please let me in")
 
@@ -52,11 +52,11 @@ struct HubRegistrationServiceTests {
 
     @Test
     func requestAccessReturnsPendingRequestWithExternalIdAndEmail() async throws {
-        client.response = .data(Self.encodeCreateResponse(externalId: "req-42"))
+        client.response = .data(Self.encodeRequestResponse(externalId: "req-42", requesterEmail: "new@home.dev"))
 
         let result = try await service.requestAccess(email: "new@home.dev", comment: nil)
 
-        #expect(result == RegistrationRequest(externalId: "req-42", email: "new@home.dev", status: .pending))
+        #expect(result == RegistrationRequest.fixture(externalId: "req-42", email: "new@home.dev", status: .pending))
     }
 
     @Test
@@ -65,6 +65,15 @@ struct HubRegistrationServiceTests {
 
         await #expect(throws: RegistrationError.alreadyRequested) {
             _ = try await service.requestAccess(email: "dup@home.dev", comment: nil)
+        }
+    }
+
+    @Test
+    func requestAccessMapsForbiddenToBlocked() async {
+        client.response = .error(HubAPIError.forbidden)
+
+        await #expect(throws: RegistrationError.blocked) {
+            _ = try await service.requestAccess(email: "blocked@home.dev", comment: nil)
         }
     }
 
@@ -86,13 +95,13 @@ struct HubRegistrationServiceTests {
         }
     }
 
-    // MARK: - checkStatus()
+    // MARK: - refreshRequest()
 
     @Test
-    func checkStatusSendsGetToRegisterRequestByIdAsUnprotected() async throws {
-        client.response = .data(Self.encodeStatusResponse(.pending))
+    func refreshRequestSendsGetToRegisterRequestByIdAsUnprotected() async throws {
+        client.response = .data(Self.encodeRequestResponse())
 
-        _ = try await service.checkStatus(requestId: "req-7")
+        _ = try await service.refreshRequest(requestId: "req-7")
 
         #expect(client.sentRequests.count == 1)
         let request = try #require(client.sentRequests.first)
@@ -103,29 +112,76 @@ struct HubRegistrationServiceTests {
     }
 
     @Test
-    func checkStatusReturnsStatusFromResponse() async throws {
-        client.response = .data(Self.encodeStatusResponse(.approved))
+    func refreshRequestMapsResponseFields() async throws {
+        client.response = .data(Self.encodeRequestResponse(
+            externalId: "req-7",
+            requesterEmail: "a@b.dev",
+            requesterComment: "let me in",
+            status: .approved,
+            role: .admin,
+            blocked: false
+        ))
 
-        let status = try await service.checkStatus(requestId: "req-7")
+        let result = try await service.refreshRequest(requestId: "req-7")
 
-        #expect(status == .approved)
+        #expect(result == RegistrationRequest.fixture(
+            externalId: "req-7",
+            email: "a@b.dev",
+            requesterComment: "let me in",
+            status: .approved,
+            role: .admin
+        ))
     }
 
     @Test
-    func checkStatusMapsNotFoundToRequestNotFound() async {
+    func refreshRequestMapsNotFoundToRequestNotFound() async {
         client.response = .error(HubAPIError.notFound)
 
         await #expect(throws: RegistrationError.requestNotFound) {
-            _ = try await service.checkStatus(requestId: "missing")
+            _ = try await service.refreshRequest(requestId: "missing")
         }
     }
 
     @Test
-    func checkStatusMapsOtherHubErrorsToUnexpected() async {
+    func refreshRequestMapsOtherHubErrorsToUnexpected() async {
         client.response = .error(HubAPIError.transport)
 
         await #expect(throws: RegistrationError.unexpected) {
-            _ = try await service.checkStatus(requestId: "req-7")
+            _ = try await service.refreshRequest(requestId: "req-7")
+        }
+    }
+
+    // MARK: - cancelRequest()
+
+    @Test
+    func cancelRequestSendsDeleteToRegisterRequestByIdAsUnprotected() async throws {
+        client.response = .data(Data())
+
+        try await service.cancelRequest(requestId: "req-7")
+
+        #expect(client.sentRequests.count == 1)
+        let request = try #require(client.sentRequests.first)
+        #expect(request.method == .delete)
+        #expect(request.path == "/auth/register/requests/req-7")
+        #expect(request.protected == false)
+        #expect(request.body == nil)
+    }
+
+    @Test
+    func cancelRequestMapsNotFoundToRequestNotFound() async {
+        client.response = .error(HubAPIError.notFound)
+
+        await #expect(throws: RegistrationError.requestNotFound) {
+            try await service.cancelRequest(requestId: "missing")
+        }
+    }
+
+    @Test
+    func cancelRequestMapsOtherHubErrorsToUnexpected() async {
+        client.response = .error(HubAPIError.transport)
+
+        await #expect(throws: RegistrationError.unexpected) {
+            try await service.cancelRequest(requestId: "req-7")
         }
     }
 
@@ -136,21 +192,33 @@ struct HubRegistrationServiceTests {
         let comment: String?
     }
 
-    private struct CreateResponsePayload: Encodable {
+    private struct RequestResponsePayload: Encodable {
         let externalId: String
-    }
-
-    private struct StatusResponsePayload: Encodable {
+        let requesterEmail: String
+        let requesterComment: String?
         let status: String
+        let role: String
+        // swiftlint:disable:next inclusive_language
+        let blackListed: Bool
     }
 
-    private static func encodeCreateResponse(externalId: String) -> Data {
+    private static func encodeRequestResponse(
+        externalId: String = "req-1",
+        requesterEmail: String = "new@home.dev",
+        requesterComment: String? = nil,
+        status: RegistrationRequestStatus = .pending,
+        role: UserRole = .resident,
+        blocked: Bool = false
+    ) -> Data {
+        let payload = RequestResponsePayload(
+            externalId: externalId,
+            requesterEmail: requesterEmail,
+            requesterComment: requesterComment,
+            status: status.rawValue,
+            role: role.rawValue,
+            blackListed: blocked
+        )
         // swiftlint:disable:next force_try
-        try! JSONEncoder().encode(CreateResponsePayload(externalId: externalId))
-    }
-
-    private static func encodeStatusResponse(_ status: RegistrationStatus) -> Data {
-        // swiftlint:disable:next force_try
-        try! JSONEncoder().encode(StatusResponsePayload(status: status.rawValue))
+        return try! JSONEncoder().encode(payload)
     }
 }

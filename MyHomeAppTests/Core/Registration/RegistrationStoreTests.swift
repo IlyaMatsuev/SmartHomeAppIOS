@@ -14,11 +14,19 @@ struct RegistrationStoreTests {
         store = RegistrationStore(service: service, persistence: persistence)
     }
 
+    private func yieldUntil(_ condition: () -> Bool, maxYields: Int = 100) async {
+        var count = 0
+        while !condition() && count < maxYields {
+            await Task.yield()
+            count += 1
+        }
+    }
+
     // MARK: - load()
 
     @Test
     func loadWithPersistedRequestBecomesPending() async {
-        let request = RegistrationRequest(externalId: "r-1", email: "a@b.dev", status: .pending)
+        let request = RegistrationRequest.fixture(externalId: "r-1", email: "a@b.dev", status: .pending)
         persistence.loadResult = .success(request)
 
         await store.load()
@@ -50,7 +58,7 @@ struct RegistrationStoreTests {
 
     @Test
     func requestAccessOnSuccessPersistsAndBecomesPending() async throws {
-        let request = RegistrationRequest(externalId: "r-9", email: "new@home.dev", status: .pending)
+        let request = RegistrationRequest.fixture(externalId: "r-9", email: "new@home.dev", status: .pending)
         service.requestAccessResult = .success(request)
 
         try await store.requestAccess(email: "new@home.dev", comment: nil)
@@ -58,21 +66,60 @@ struct RegistrationStoreTests {
         #expect(service.requestedEmails == ["new@home.dev"])
         #expect(persistence.savedRequests == [request])
         #expect(store.state == .pending(request))
+        #expect(service.cancelRequestCallCount == 0)
     }
 
     @Test
     func requestAccessOverridesPreviousPendingRequest() async throws {
-        let first = RegistrationRequest(externalId: "r-1", email: "first@home.dev", status: .pending)
+        let first = RegistrationRequest.fixture(externalId: "r-1", email: "first@home.dev", status: .pending)
         service.requestAccessResult = .success(first)
         try await store.requestAccess(email: "first@home.dev", comment: nil)
 
-        let second = RegistrationRequest(externalId: "r-2", email: "second@home.dev", status: .pending)
+        let second = RegistrationRequest.fixture(externalId: "r-2", email: "second@home.dev", status: .pending)
         service.requestAccessResult = .success(second)
         try await store.requestAccess(email: "second@home.dev", comment: nil)
 
         #expect(store.state == .pending(second))
         #expect(store.pendingRequest == second)
         #expect(persistence.savedRequests == [first, second])
+
+        // The previous request is cancelled in a fire-and-forget task; let it run.
+        await yieldUntil { service.cancelledRequestIds == [first.externalId] }
+        #expect(service.cancelledRequestIds == [first.externalId])
+    }
+
+    @Test
+    func requestAccessForSameEmailDoesNotCancelPreviousRequest() async throws {
+        let rejected = RegistrationRequest.fixture(externalId: "r-1", email: "same@home.dev", status: .rejected)
+        service.requestAccessResult = .success(rejected)
+        try await store.requestAccess(email: "same@home.dev", comment: nil)
+
+        let resubmitted = RegistrationRequest.fixture(externalId: "r-2", email: "Same@Home.dev", status: .pending)
+        service.requestAccessResult = .success(resubmitted)
+        try await store.requestAccess(email: "Same@Home.dev", comment: "again")
+
+        #expect(store.pendingRequest == resubmitted)
+
+        // Give any (unexpected) fire-and-forget cancel a chance to run before asserting none happened.
+        await yieldUntil { service.cancelRequestCallCount > 0 }
+        #expect(service.cancelledRequestIds.isEmpty)
+    }
+
+    @Test
+    func requestAccessFailureKeepsPreviousRequestAndDoesNotCancelIt() async throws {
+        let existing = RegistrationRequest.fixture(externalId: "r-1", email: "first@home.dev", status: .pending)
+        service.requestAccessResult = .success(existing)
+        try await store.requestAccess(email: "first@home.dev", comment: nil)
+
+        service.requestAccessResult = .failure(RegistrationError.unexpected)
+
+        await #expect(throws: RegistrationError.unexpected) {
+            try await store.requestAccess(email: "second@home.dev", comment: nil)
+        }
+
+        #expect(store.state == .pending(existing))
+        #expect(store.pendingRequest == existing)
+        #expect(service.cancelledRequestIds.isEmpty)
     }
 
     @Test
@@ -91,18 +138,19 @@ struct RegistrationStoreTests {
     // MARK: - refreshStatus()
 
     @Test
-    func refreshStatusUpdatesStatusAndPersists() async throws {
-        let request = RegistrationRequest(externalId: "r-1", email: "a@b.dev", status: .pending)
-        persistence.loadResult = .success(request)
+    func refreshStatusUpdatesRequestAndPersists() async throws {
+        let pending = RegistrationRequest.fixture(externalId: "r-1", status: .pending)
+        persistence.loadResult = .success(pending)
         await store.load()
-        service.checkStatusResult = .success(.approved)
+        let approved = RegistrationRequest.fixture(externalId: "r-1", status: .approved, role: .resident)
+        service.refreshRequestResult = .success(approved)
 
-        let status = try await store.refreshStatus()
+        let refreshed = try await store.refreshStatus()
 
-        #expect(status == .approved)
-        #expect(service.checkedRequestIds == ["r-1"])
-        #expect(store.pendingRequest == request.withStatus(.approved))
-        #expect(persistence.savedRequests.last == request.withStatus(.approved))
+        #expect(refreshed == approved)
+        #expect(service.refreshedRequestIds == ["r-1"])
+        #expect(store.pendingRequest == approved)
+        #expect(persistence.savedRequests.last == approved)
     }
 
     @Test
@@ -112,15 +160,15 @@ struct RegistrationStoreTests {
         await #expect(throws: RegistrationError.requestNotFound) {
             _ = try await store.refreshStatus()
         }
-        #expect(service.checkStatusCallCount == 0)
+        #expect(service.refreshRequestCallCount == 0)
     }
 
     @Test
     func refreshStatusOnFailurePropagatesAndKeepsRequest() async {
-        let request = RegistrationRequest(externalId: "r-1", email: "a@b.dev", status: .pending)
+        let request = RegistrationRequest.fixture(externalId: "r-1")
         persistence.loadResult = .success(request)
         await store.load()
-        service.checkStatusResult = .failure(RegistrationError.unexpected)
+        service.refreshRequestResult = .failure(RegistrationError.unexpected)
 
         await #expect(throws: RegistrationError.unexpected) {
             _ = try await store.refreshStatus()
@@ -132,7 +180,7 @@ struct RegistrationStoreTests {
 
     @Test
     func clearRemovesPersistedRequestAndBecomesNone() async {
-        let request = RegistrationRequest(externalId: "r-1", email: "a@b.dev", status: .pending)
+        let request = RegistrationRequest.fixture(externalId: "r-1", email: "a@b.dev", status: .pending)
         persistence.loadResult = .success(request)
         await store.load()
 
@@ -143,18 +191,30 @@ struct RegistrationStoreTests {
         #expect(!store.hasPendingRequest)
     }
 
-    // MARK: - cancel()
+    // MARK: - cancelAndClear()
 
     @Test
     func cancelRemovesPersistedRequestAndBecomesAbsent() async {
-        let request = RegistrationRequest(externalId: "r-1", email: "a@b.dev", status: .pending)
+        let request = RegistrationRequest.fixture(externalId: "r-1", email: "a@b.dev", status: .pending)
         persistence.loadResult = .success(request)
         await store.load()
 
-        await store.cancel()
+        await store.cancelAndClear()
 
         #expect(store.state == .absent)
         #expect(persistence.clearCallCount == 1)
         #expect(!store.hasPendingRequest)
+        #expect(service.cancelledRequestIds == [request.externalId])
+    }
+
+    @Test
+    func cancelAndClearWithoutPendingRequestDoesNotCallService() async {
+        await store.load()
+
+        await store.cancelAndClear()
+
+        #expect(store.state == .absent)
+        #expect(persistence.clearCallCount == 1)
+        #expect(service.cancelRequestCallCount == 0)
     }
 }

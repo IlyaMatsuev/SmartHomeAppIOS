@@ -53,6 +53,10 @@ final class SessionStore {
         state = .authenticated(AuthSession(token: token))
     }
 
+    func register(email: String, password: String) async throws {
+        try await service.register(email: email, password: password)
+    }
+
     func logout() {
         do {
             try tokenStore.clear()

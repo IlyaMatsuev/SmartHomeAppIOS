@@ -6,12 +6,14 @@ struct HubRegistrationService: RegistrationService {
         let comment: String?
     }
 
-    private struct CreateResponse: Decodable {
+    private struct RegistrationRequestResponse: Decodable {
         let externalId: String
-    }
-
-    private struct StatusResponse: Decodable {
-        let status: RegistrationStatus
+        let requesterEmail: String
+        let requesterComment: String?
+        let status: RegistrationRequestStatus
+        let role: UserRole
+        // swiftlint:disable:next inclusive_language
+        let blackListed: Bool
     }
 
     private let client: MyHomeAPIClient
@@ -24,8 +26,8 @@ struct HubRegistrationService: RegistrationService {
         do {
             let body = CreateRequest(email: email, comment: comment)
             let request = try HubRequest.post("/auth/register/requests", body, protected: false)
-            let response: CreateResponse = try await client.send(request)
-            return RegistrationRequest(externalId: response.externalId, email: email, status: .pending)
+            let response: RegistrationRequestResponse = try await client.send(request)
+            return Self.mapRegistrationRequest(response)
         } catch let error as HubAPIError {
             throw Self.mapError(error)
         } catch {
@@ -33,11 +35,11 @@ struct HubRegistrationService: RegistrationService {
         }
     }
 
-    func checkStatus(requestId: String) async throws -> RegistrationStatus {
+    func refreshRequest(requestId: String) async throws -> RegistrationRequest {
         do {
             let request = HubRequest.get("/auth/register/requests/\(requestId)", protected: false)
-            let response: StatusResponse = try await client.send(request)
-            return response.status
+            let response: RegistrationRequestResponse = try await client.send(request)
+            return Self.mapRegistrationRequest(response)
         } catch let error as HubAPIError {
             throw Self.mapError(error)
         } catch {
@@ -56,10 +58,22 @@ struct HubRegistrationService: RegistrationService {
         }
     }
 
+    private static func mapRegistrationRequest(_ response: RegistrationRequestResponse) -> RegistrationRequest {
+        return RegistrationRequest(
+            externalId: response.externalId,
+            email: response.requesterEmail,
+            requesterComment: response.requesterComment,
+            status: response.status,
+            role: response.role,
+            blocked: response.blackListed
+        )
+    }
+
     private static func mapError(_ error: HubAPIError) -> RegistrationError {
         switch error {
         case .conflict: .alreadyRequested
         case .notFound: .requestNotFound
+        case .forbidden: .blocked
         default: .unexpected
         }
     }

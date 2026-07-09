@@ -62,26 +62,27 @@ final class RegistrationStore {
         try? persistence.save(request)
         state = .pending(request)
 
-        if let previous {
+        // Only cancel a previous request for a different email
+        // Resubmitting for the same email reuses the server-side request, so cancelling would void the new one.
+        if let previous, previous.email.caseInsensitiveCompare(request.email) != .orderedSame {
             cancelRequest(requestId: previous.externalId)
         }
     }
 
     @discardableResult
-    func refreshStatus() async throws -> RegistrationStatus {
+    func refreshStatus() async throws -> RegistrationRequest {
         guard let request = pendingRequest else {
             throw RegistrationError.requestNotFound
         }
-        let status = try await service.checkStatus(requestId: request.externalId)
-        let updated = request.withStatus(status)
-        try? persistence.save(updated)
-        state = .pending(updated)
-        return status
+        let refreshedRequest = try await service.refreshRequest(requestId: request.externalId)
+        try? persistence.save(refreshedRequest)
+        state = .pending(refreshedRequest)
+        return refreshedRequest
     }
 
-    func cancelAndClear() {
+    func cancelAndClear() async {
         if let request = pendingRequest {
-            cancelRequest(requestId: request.externalId)
+            try? await service.cancelRequest(requestId: request.externalId)
         }
         clear()
     }

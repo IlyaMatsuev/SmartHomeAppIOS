@@ -2,12 +2,13 @@ import Foundation
 import Testing
 @testable import MyHomeApp
 
-struct RegistrationStatusTests {
+struct RegistrationRequestStatusTests {
     @Test
     func decodesFromServerRawValues() throws {
         #expect(try decode("pending") == .pending)
         #expect(try decode("approved") == .approved)
         #expect(try decode("rejected") == .rejected)
+        #expect(try decode("cancelled") == .cancelled)
     }
 
     @Test
@@ -17,7 +18,7 @@ struct RegistrationStatusTests {
         }
     }
 
-    private func decode(_ rawValue: String) throws -> RegistrationStatus {
-        try JSONDecoder().decode(RegistrationStatus.self, from: Data("\"\(rawValue)\"".utf8))
+    private func decode(_ rawValue: String) throws -> RegistrationRequestStatus {
+        try JSONDecoder().decode(RegistrationRequestStatus.self, from: Data("\"\(rawValue)\"".utf8))
     }
 }

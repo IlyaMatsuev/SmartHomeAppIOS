@@ -4,7 +4,7 @@ final class UserDefaultsRegistrationPersistence: RegistrationPersistence, @unche
     private let key: String
     private let defaults: UserDefaults
 
-    init(key: String = "com.smarthome.registrationRequest", defaults: UserDefaults = .standard) {
+    init(key: String = "com.myhome.registrationRequest", defaults: UserDefaults = .standard) {
         self.key = key
         self.defaults = defaults
     }

@@ -23,7 +23,7 @@ struct RegistrationStatusViewModelTests {
 
     @Test
     func requestReflectsStorePendingRequest() async {
-        let request = RegistrationRequest(externalId: "r-1", email: "a@b.dev", status: .pending)
+        let request = RegistrationRequest.fixture(externalId: "r-1", email: "a@b.dev", status: .pending)
         await seedPendingRequest(request)
 
         #expect(viewModel.request == request)
@@ -33,14 +33,14 @@ struct RegistrationStatusViewModelTests {
 
     @Test
     func refreshUpdatesStatusFromService() async throws {
-        let request = RegistrationRequest(externalId: "r-1", email: "a@b.dev", status: .pending)
+        let request = RegistrationRequest.fixture(externalId: "r-1", email: "a@b.dev", status: .pending)
         await seedPendingRequest(request)
-        service.checkStatusResult = .success(.approved)
+        service.refreshRequestResult = .success(.fixture(externalId: "r-1", email: "a@b.dev", status: .approved))
 
         await viewModel.refresh()
 
-        #expect(service.checkStatusCallCount == 1)
-        #expect(service.checkedRequestIds == ["r-1"])
+        #expect(service.refreshRequestCallCount == 1)
+        #expect(service.refreshedRequestIds == ["r-1"])
         let updated = try #require(viewModel.request)
         #expect(updated.status == .approved)
         #expect(viewModel.errorMessage == nil)
@@ -48,9 +48,9 @@ struct RegistrationStatusViewModelTests {
 
     @Test
     func refreshWhenServiceFailsSetsErrorMessage() async {
-        let request = RegistrationRequest(externalId: "r-1", email: "a@b.dev", status: .pending)
+        let request = RegistrationRequest.fixture(externalId: "r-1", email: "a@b.dev", status: .pending)
         await seedPendingRequest(request)
-        service.checkStatusResult = .failure(RegistrationError.unexpected)
+        service.refreshRequestResult = .failure(RegistrationError.unexpected)
 
         await viewModel.refresh()
 
@@ -61,7 +61,7 @@ struct RegistrationStatusViewModelTests {
 
     @Test
     func cancelClearsPendingRequest() async {
-        let request = RegistrationRequest(externalId: "r-1", email: "a@b.dev", status: .pending)
+        let request = RegistrationRequest.fixture(externalId: "r-1", email: "a@b.dev", status: .pending)
         await seedPendingRequest(request)
 
         await viewModel.cancel()
@@ -69,5 +69,6 @@ struct RegistrationStatusViewModelTests {
         #expect(!store.hasPendingRequest)
         #expect(viewModel.request == nil)
         #expect(!viewModel.cancelling)
+        #expect(service.cancelledRequestIds == [request.externalId])
     }
 }

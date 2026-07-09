@@ -31,11 +31,11 @@ final class RegistrationStatusViewModel {
         refreshing = false
     }
 
-    func cancel() {
+    func cancel() async {
         guard !cancelling else { return }
 
         cancelling = true
-        registrationStore.cancelAndClear()
+        await registrationStore.cancelAndClear()
         cancelling = false
     }
 }

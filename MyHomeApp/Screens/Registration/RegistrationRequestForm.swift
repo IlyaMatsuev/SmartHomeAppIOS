@@ -3,15 +3,34 @@ import SwiftUI
 struct RegistrationRequestForm: View {
     @Bindable var viewModel: RegistrationRequestViewModel
     var onSubmitted: () -> Void
+    var onAlreadyApproved: () -> Void
 
     var body: some View {
         VStack(spacing: 24) {
             header
             fields
             errorText
-            requestButton
+            actions
         }
         .padding(.horizontal, 24)
+    }
+
+    private var actions: some View {
+        VStack(spacing: 12) {
+            requestButton
+            alreadyApprovedButton
+        }
+    }
+
+    private var alreadyApprovedButton: some View {
+        Button(action: onAlreadyApproved) {
+            Text("Already approved")
+                .font(.headline)
+                .foregroundStyle(Color("AccentPrimary"))
+                .frame(maxWidth: .infinity, minHeight: 48)
+                .background(Color("BackgroundSecondary"))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
     }
 
     private var fields: some View {
